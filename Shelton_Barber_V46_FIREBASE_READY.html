@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shelton & Barber • V46 com Firebase</title>
+<style>
+:root{--bg:#111111;--top:#202020;--panel:#49454f;--panel2:#2d2a24;--gold:#c9a45a;--text:#f2eef4;--muted:#aaa4b0;--line:#77717f;--green:#4caf50;--danger:#e9a5ac}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:16px}button,input,textarea,select{font:inherit}button{cursor:pointer}header{height:82px;background:var(--top);display:flex;align-items:center;gap:12px;padding:0 14px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0002}.home-shortcut{display:flex;align-items:center;gap:5px;flex-shrink:0;border:1px solid var(--gold);border-radius:12px;background:#c9a45a1c;color:var(--gold);padding:9px 10px;font-size:16px;font-weight:800;line-height:1}.home-shortcut span{font-size:13px}header h1{font-size:23px;margin:0;font-weight:650;flex:1} .iconbtn{border:0;background:transparent;color:var(--text);font-size:28px;padding:5px;line-height:1}.avatar-mini{width:40px;height:40px;border-radius:50%;background:#ddd;color:#111;display:grid;place-items:center;font-weight:800}.page{display:none;padding:20px 16px 100px;max-width:760px;margin:auto}.page.active{display:block}.hero{display:flex;align-items:center;gap:18px;margin:12px 0 28px}.avatar{width:100px;height:100px;flex-shrink:0;border-radius:50%;background:#28262b;border:1px solid #3d3942;display:grid;place-items:center;font-size:36px;color:var(--gold)}.hero h2{font-size:28px;margin:0 0 4px}.green{color:var(--green);font-weight:650}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.tile{border:1px solid #302d27;background:#25231f;border-radius:20px;min-height:118px;padding:16px 5px;color:var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:650}.tile .ico{font-size:30px}.section-title{color:var(--gold);font-size:21px;font-weight:700;margin:28px 0 16px}.empty{color:#96919c;text-align:center;padding:90px 10px;font-size:19px}.card{background:var(--panel);border-radius:20px;padding:18px;margin:14px 0;color:var(--text)}.goldcard{background:var(--panel2);border-radius:22px;padding:20px;margin:16px 0}.gold{color:var(--gold)}.muted{color:var(--muted)}.field{display:flex;flex-direction:column;gap:6px;margin:13px 0}.field label{color:#d1cbd8;font-size:14px}.field input,.field textarea,.field select,input.control,textarea.control,select.control{width:100%;background:transparent;border:1px solid var(--line);border-radius:9px;color:var(--text);padding:14px;outline:none}.field textarea{min-height:110px;resize:vertical}.field select option{background:#222}.btn{border:0;border-radius:14px;background:var(--gold);color:#15120a;padding:14px 18px;font-weight:700}.btn.secondary{background:var(--panel);color:var(--text);border:1px solid var(--line)}.btn.danger{background:transparent;color:var(--danger);padding-left:0}.btn.full{width:100%;margin-top:16px}.row{display:flex;align-items:center;gap:12px}.row>*{min-width:0}.between{justify-content:space-between}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pill{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:transparent;color:var(--text)}.pill.selected{background:var(--panel);border-color:var(--gold);color:var(--gold)}.tabs{display:flex;border-bottom:1px solid #45414b;margin:0 -16px 18px}.tabs button{flex:1;background:transparent;color:var(--gold);border:0;padding:16px 5px;border-bottom:4px solid transparent;font-weight:700}.tabs button.selected{border-color:var(--gold)}.listitem{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:17px;padding:14px;margin:12px 0}
+/* V5: cartões compactos de agendamento */
+.appointment-card .appointment-service{display:flex;align-items:center;gap:7px;margin:3px 0;min-width:0}
+.appointment-card .appointment-service-photo{width:28px;height:28px;min-width:28px;border-radius:6px;overflow:hidden;background:#34313a;color:var(--gold);display:grid;place-items:center;font-size:13px}
+.appointment-card .appointment-service-photo img{width:100%;height:100%;object-fit:cover}
+.appointment-card .appointment-service-info{font-size:10px;line-height:1.15;min-width:0;overflow-wrap:anywhere}
+@media(max-width:420px){.appointment-card .appointment-service-photo{width:26px;height:26px;min-width:26px}}
+.appointment-card{width:100%;max-width:none;box-sizing:border-box;margin:4px auto;padding:3px 6px;border-radius:8px;background:#222;border:1px solid #46434b}
+.appointment-card .appointment-person{display:flex;align-items:center;gap:7px;min-width:0}
+.appointment-card .appointment-photo{width:28px;height:28px;min-width:28px;border-radius:50%;overflow:hidden;background:#34313a;color:var(--gold);display:grid;place-items:center;font-size:10px;font-weight:700}
+.appointment-card .appointment-photo img{width:100%;height:100%;object-fit:cover}
+.appointment-card .appointment-info{min-width:0;flex:1}
+.appointment-card .appointment-info b{display:block;font-size:12px;line-height:1.05;overflow-wrap:anywhere}
+.appointment-card .appointment-info .muted{font-size:10px;line-height:1.05;overflow-wrap:anywhere}
+.appointment-card .appointment-detail{font-size:10px;margin:2px 0 2px}
+.appointment-card .pill{font-size:10px;padding:3px 6px;border-radius:7px}
+@media(max-width:420px){.appointment-card{width:100%;padding:3px 5px}.appointment-card .appointment-photo{width:26px;height:26px;min-width:26px}}
+.progress{height:3px;border-radius:5px;background:#4a4650;margin-top:12px}.progress span{display:block;height:100%;background:var(--gold);border-radius:5px}.switch{display:flex;align-items:center;gap:12px}.switch input{width:22px;height:22px;accent-color:var(--gold)}.settings-card{background:var(--panel);border-radius:18px;padding:18px;margin:16px 0}.settings-card h3{margin:0 0 6px;font-size:19px}.days{display:flex;flex-wrap:wrap;gap:8px}.day{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text)}.day.on{background:var(--panel);border-color:var(--gold);color:var(--gold)}.menu-backdrop{display:none;position:fixed;inset:0;background:#0009;z-index:10}.menu{position:fixed;top:0;bottom:0;left:0;width:min(86vw,360px);overflow:auto;background:#252422;transform:translateX(-105%);transition:transform .22s;z-index:11;padding:22px 18px calc(24px + env(safe-area-inset-bottom))}.menu.open{transform:translateX(0)}.menu-backdrop.open{display:block}.brand{height:110px;display:grid;place-items:center;color:var(--gold);font-weight:800;font-size:23px;text-align:center}.menu button{display:flex;align-items:center;gap:16px;width:100%;padding:14px 7px;border:0;background:transparent;color:#d7d1dc;text-align:left;font-size:17px}.menu button span{width:26px;text-align:center}.menu hr{border:0;border-top:1px solid #514d4b;margin:12px 0}.notice{background:#e6f4e8;color:#347a43;padding:12px;text-align:center;font-weight:700;margin:-20px -16px 18px}.bar{height:3px;background:#4a4650;border-radius:4px}.bar span{display:block;background:var(--gold);height:100%;width:0;border-radius:4px}.chart{height:190px;display:flex;align-items:end;justify-content:space-around;border-bottom:1px solid #77717f;padding:10px 0 0}.barcol{display:flex;flex-direction:column;align-items:center;justify-content:end;height:100%;gap:6px;flex:1;color:var(--muted);font-size:12px}.barcol i{display:block;width:30px;max-width:70%;background:var(--gold);border-radius:6px 6px 0 0}.footerhint{font-size:12px;color:var(--muted);text-align:center;margin-top:22px}.small{font-size:13px}.badge{display:inline-block;background:#e6f4e8;color:#347a43;border-radius:99px;padding:8px 12px;font-weight:700}.profile-photo{width:116px;height:116px;border-radius:50%;background:#ddd;color:#222;display:grid;place-items:center;font-size:36px;margin:12px auto}.theme-card{padding:18px;border-radius:17px;display:flex;align-items:center;gap:12px;border:2px solid transparent;color:inherit}.swatch{width:48px;height:48px;border-radius:50%;flex-shrink:0}.theme-card.selected{border-color:var(--gold)}@media(min-width:620px){.page{padding-left:26px;padding-right:26px}.tiles{gap:16px}.tile{min-height:140px}.hero h2{font-size:32px}} 
+
+/* V14: data e horário em destaque no centro do cartão */
+/* V16: remove a data do cartão e compacta o campo com horário, serviço e foto */
+.appointment-card{padding:3px 5px;margin:3px auto}
+.appointment-card .appointment-person{gap:6px}
+.appointment-card .appointment-datetime{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;text-align:center;background:#302a20;border:1px solid var(--gold);border-radius:7px;padding:2px 5px;margin:2px 0;gap:6px;min-width:0}
+.appointment-card .appointment-datetime .appointment-service-photo{width:32px;height:32px;min-width:32px;border-radius:6px;overflow:hidden;background:#34313a;color:var(--gold);display:grid;place-items:center;font-size:14px}
+.appointment-card .appointment-datetime .appointment-service-photo img{width:100%;height:100%;object-fit:cover}
+.appointment-card .appointment-datetime-main{display:flex;flex-direction:row;align-items:center;justify-content:space-between;text-align:center;flex:1;min-width:0;gap:7px}
+.appointment-card .appointment-date{display:none;font-size:15px;font-weight:850;letter-spacing:.6px;line-height:1.15;color:#f3d28a}
+.appointment-card .appointment-time{font-size:18px;font-weight:900;line-height:1.05;color:#fff;white-space:nowrap}
+.appointment-card .appointment-datetime-label{display:none;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#d2c6ae}
+.appointment-card .appointment-service-name{font-size:10px;line-height:1.1;color:#e6d7b5;max-width:100%;overflow-wrap:anywhere;text-align:right}
+@media(max-width:420px){.appointment-card .appointment-datetime .appointment-service-photo{width:30px;height:30px;min-width:30px}.appointment-card .appointment-time{font-size:17px}.appointment-card .appointment-service-name{font-size:9px}}
+
+
+/* V17: navegação por data e filtro diário da agenda */
+.appointment-day-guide{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#222;border:1px solid #46434b;border-radius:14px;padding:9px;margin:10px 0 5px}
+.day-nav-btn{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--gold);border-radius:11px;background:#302a20;color:var(--gold);font-size:30px;line-height:1}
+.appointment-day-center{display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;gap:4px}
+.appointment-day-center label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+#appointmentDayPicker{width:100%;max-width:220px;border:0;background:transparent;color:var(--gold);font-size:16px;font-weight:800;text-align:center;padding:2px;color-scheme:dark;outline:none}
+.appointment-day-label{font-size:12px;color:var(--muted)}
+.appointment-day-summary{text-align:center;color:var(--muted);font-size:12px;margin:6px 0 10px}
+/* V41: aproveita a tela vertical na agenda, aproximando a grade dos controles de data. */
+#appointments.appointments-compact{padding-top:4px}
+#appointments.appointments-compact>h2{display:none}
+#appointments .appointment-day-guide{margin-top:0;margin-bottom:2px;padding:6px}
+#appointments .appointment-day-summary{display:none}
+#appointments .appointment-timeline{margin-top:0;margin-bottom:10px}
+
+
+/* V21: centraliza nome e telefone sem aumentar a altura da paleta */
+.appointment-card .appointment-person{position:relative;justify-content:flex-start;gap:6px;min-height:28px}
+.appointment-card .appointment-info{flex:1;min-width:0;text-align:center;padding:0 2px}
+.appointment-card .appointment-info b{font-size:12px;line-height:1.05;font-weight:800;color:#f3d28a;letter-spacing:.15px;margin:0 0 2px}
+.appointment-card .appointment-info .muted{font-size:10px;line-height:1.05;text-align:center;color:#c8c1ce}
+@media(max-width:420px){.appointment-card .appointment-info b{font-size:12px}.appointment-card .appointment-info .muted{font-size:10px}}
+
+
+/* V23: grade diária com horários e abertura do formulário ao tocar num intervalo livre */
+.appointment-timeline{display:grid;grid-template-columns:58px minmax(0,1fr);grid-auto-rows:42px;position:relative;margin:8px -4px 18px;border-top:1px solid #45414b;border-bottom:1px solid #45414b;overflow:visible}
+.timeline-time{grid-column:1;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 8px 0 0;color:var(--muted);font-size:12px;border-top:1px solid #45414b;white-space:nowrap}
+.timeline-time.major{color:var(--text);font-weight:700;font-size:13px}
+.timeline-slot{grid-column:2;border:0;border-top:1px solid #45414b;background:transparent;min-width:0;width:100%;padding:0;text-align:left;position:relative}
+.timeline-slot:active,.timeline-slot:focus-visible{background:#c9a45a22;outline:1px solid var(--gold);outline-offset:-1px}
+.timeline-block{grid-column:2;z-index:1;align-self:stretch;margin:2px 0;border-radius:8px;background:#f2e5c8;color:#342b20;border:1px solid #dfcfaa;padding:5px 8px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;font-size:12px}
+.timeline-block b{font-size:13px}.timeline-block button{align-self:flex-end;border:0;border-radius:5px;background:#ffffffa0;color:#342b20;font-size:10px;padding:2px 5px}
+.timeline-slot:after{content:'+';position:absolute;right:10px;top:7px;color:transparent;font-size:18px}
+.timeline-slot:focus-visible:after,.timeline-slot:hover:after{color:var(--gold)}
+.timeline-event{grid-column:2;z-index:2;align-self:stretch;min-width:0;overflow:hidden;border-radius:9px;margin:2px 0;background:#4b82d0;border:1px solid #79a8ed;color:white;padding:5px 8px;text-align:left;box-shadow:0 1px 2px #0004}
+.timeline-event b{display:block;font-size:13px;line-height:1.15;overflow-wrap:anywhere}
+.timeline-event .timeline-event-time{font-size:11px;opacity:.95;margin-bottom:4px}
+.timeline-event .timeline-event-service{font-size:11px;line-height:1.15;overflow-wrap:anywhere;margin-top:2px}
+/* V24: cartão compacto com nome em destaque, horário e fotos do cliente/serviço */
+.timeline-event{padding:5px 7px}
+.timeline-event .event-head{display:flex;align-items:center;gap:7px;min-width:0}
+.timeline-event .event-person-photo{width:34px;height:34px;flex:0 0 34px;border-radius:50%;overflow:hidden;background:#315d98;border:1px solid #ffffff99;display:grid;place-items:center;font-size:11px;font-weight:800}
+.timeline-event .event-person-photo img{width:100%;height:100%;object-fit:cover}
+.timeline-event .event-main{flex:1;min-width:0}
+.timeline-event .event-client-name{font-size:14px;font-weight:850;line-height:1.1;overflow-wrap:anywhere}
+.timeline-event .event-service-row{display:flex;align-items:center;gap:6px;min-width:0;margin-top:5px}
+.timeline-event .event-service-photo{width:27px;height:27px;flex:0 0 27px;border-radius:6px;overflow:hidden;background:#315d98;border:1px solid #ffffff80;display:grid;place-items:center;font-size:13px}
+.timeline-event .event-service-photo img{width:100%;height:100%;object-fit:cover}
+.timeline-event .event-service-title{font-size:10px;line-height:1.1;min-width:0;overflow-wrap:anywhere}
+@media(max-width:420px){.timeline-event .event-person-photo{width:30px;height:30px;flex-basis:30px}.timeline-event .event-client-name{font-size:13px}.timeline-event .event-service-photo{width:25px;height:25px;flex-basis:25px}.timeline-event .timeline-event-time{font-size:11px}}
+.timeline-event .timeline-remove{position:absolute;right:5px;bottom:4px;border:0;background:#ffffff30;color:#fff;border-radius:6px;font-size:10px;padding:2px 5px}
+@media(max-width:420px){.appointment-timeline{grid-template-columns:52px minmax(0,1fr);grid-auto-rows:42px;margin-left:-8px;margin-right:-8px}.timeline-event{padding:4px 6px}.timeline-event b{font-size:12px}.timeline-event .timeline-event-time,.timeline-event .timeline-event-service{font-size:10px}}
+
+
+/* V25: cartões adaptáveis à duração, sem cortar fotos ou informações */
+.timeline-event{min-width:0;display:flex;flex-direction:column;justify-content:center;position:relative;padding:4px 7px;}
+.timeline-event.short-event{padding:2px 5px;overflow:hidden}
+.short-event-layout{display:flex;align-items:center;gap:6px;min-width:0;width:100%;height:100%}
+.short-event .event-person-photo{width:27px;height:27px;flex:0 0 27px;border-radius:50%;overflow:hidden;background:#315d98;border:1px solid #ffffff99;display:grid;place-items:center;font-size:9px;font-weight:800}
+.short-event .event-person-photo img,.short-event .event-service-photo img{width:100%;height:100%;object-fit:cover}
+.short-event-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.short-event .timeline-event-time{font-size:10px;line-height:1.05;margin:0;white-space:nowrap}
+.short-event .event-client-name{font-size:12px;font-weight:850;line-height:1.1;overflow-wrap:anywhere}
+.short-event-service{display:flex;align-items:center;gap:4px;min-width:0;max-width:43%}
+.short-event .event-service-photo{width:25px;height:25px;flex:0 0 25px;border-radius:5px;overflow:hidden;background:#315d98;border:1px solid #ffffff80;display:grid;place-items:center;font-size:11px}
+.short-event .event-service-title{font-size:9px;line-height:1.05;min-width:0;overflow-wrap:anywhere;max-height:2.1em;overflow:hidden}
+.long-event .event-client-name{font-size:14px;font-weight:850;line-height:1.15;overflow-wrap:anywhere}
+.long-event .event-service-title{font-size:11px;line-height:1.15;overflow-wrap:anywhere}
+@media(max-width:420px){.short-event-layout{gap:4px}.short-event .event-person-photo{width:24px;height:24px;flex-basis:24px}.short-event .event-client-name{font-size:11px}.short-event-service{gap:3px;max-width:45%}.short-event .event-service-photo{width:22px;height:22px;flex-basis:22px}.short-event .event-service-title{font-size:8px}.short-event .timeline-event-time{font-size:9px}}
+
+
+/* V26: cores vivas por serviço, com contraste automático no cartão */
+.service-color-choices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:5px}
+.service-color-choice{height:42px;min-width:0;border-radius:11px;border:2px solid #ffffff55;position:relative;box-shadow:inset 0 0 0 1px #0002}
+.service-color-choice[aria-pressed="true"]{outline:3px solid var(--gold);outline-offset:2px;border-color:#fff}
+.service-color-choice[aria-pressed="true"]:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;text-shadow:0 1px 4px #000;font-size:20px;font-weight:900}
+.timeline-event{color:var(--event-text,#fff);border-color:var(--event-border,#ffffff80)}
+.timeline-event .event-client-name,.timeline-event .timeline-event-time,.timeline-event .event-service-title{color:inherit}
+.timeline-event .event-person-photo,.timeline-event .event-service-photo{border-color:color-mix(in srgb,var(--event-text,#fff) 50%,transparent);background:color-mix(in srgb,var(--event-text,#fff) 12%,transparent)}
+.timeline-event .timeline-remove{color:var(--event-text,#fff);background:color-mix(in srgb,var(--event-text,#fff) 18%,transparent)}
+
+/* V30: corrigida referência de conversão de horário no término do arraste em telas touch */
+.appointment-action-backdrop{display:none;position:fixed;inset:0;background:#000b;z-index:30;align-items:center;justify-content:center;padding:20px}
+.appointment-action-backdrop.open{display:flex}
+.appointment-action-modal{width:min(100%,420px);background:var(--panel);color:var(--text);border:1px solid var(--gold);border-radius:20px;padding:20px;box-shadow:0 18px 60px #0008}
+.appointment-action-modal h3{margin:0 0 8px}.appointment-action-modal .btn{margin-top:8px}.appointment-action-modal .btn.secondary{background:transparent}
+.timeline-event{cursor:pointer;user-select:none;-webkit-user-select:none}
+
+/* V35: corrige contraste dos cartões da Carteira de Clientes em todos os temas */
+#clientList .listitem{background:var(--panel);color:var(--text);border-color:var(--line)}
+#clientList .listitem b{color:var(--text)}
+#clientList .listitem .muted{color:var(--muted)}
+#clientList .listitem .progress{background:var(--line)}
+#clientList .listitem .pill{color:var(--text);border-color:var(--line)}
+
+
+/* V36: contraste responsivo do painel de faturamento em todos os temas */
+#reports .goldcard{background:var(--panel)!important;color:var(--text)!important;border:1px solid var(--line)}
+#reports .goldcard .gold{color:var(--gold)!important}
+#reports .goldcard .muted{color:var(--muted)!important}
+#reports .goldcard #revenue,
+#reports .goldcard #totalRevenueSmall,
+#reports .goldcard #averageTicket,
+#reports .goldcard .row b{color:var(--text)}
+#reports .goldcard hr{border-color:var(--line)!important}
+
+/* V40: compactação real das linhas da grade durante o almoço */
+/* V37: contraste dos cartões de relatórios em todos os temas */
+#reports .listitem{background:var(--panel)!important;color:var(--text)!important;border-color:var(--line)!important}
+#reports .listitem b,#reports .listitem span:not(.muted){color:var(--text)}
+#reports .listitem .muted{color:var(--muted)!important}
+#reports .listitem .green{color:var(--green)!important}
+.required-mark{color:var(--gold);font-weight:800}
+
+/* Acesso protegido Shelton & Barber */
+#sheltonLoginGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:#111;color:#f2eef4}
+#sheltonLoginGate .login-card{width:100%;max-width:420px;background:#25231f;border:1px solid #c9a45a;border-radius:22px;padding:26px;box-shadow:0 16px 48px #0008}
+#sheltonLoginGate h2{margin:0 0 8px;color:#c9a45a}
+#sheltonLoginGate p{line-height:1.45;color:#c7c0cb}
+#sheltonLoginGate input{width:100%;box-sizing:border-box;background:#171717;border:1px solid #77717f;border-radius:10px;padding:13px;color:#fff}
+#sheltonLoginGate button{width:100%;margin-top:14px;background:#c9a45a;color:#15120a;border:0;border-radius:12px;padding:14px;font-weight:800;cursor:pointer}
+#sheltonLoginMessage{min-height:24px;color:#ffb4b4;font-size:14px;margin-top:12px}
+body:not(.shelton-authenticated)>header,body:not(.shelton-authenticated)>#backdrop,body:not(.shelton-authenticated)>#menu,body:not(.shelton-authenticated)>main,body:not(.shelton-authenticated)>#appointmentActionBackdrop{display:none!important}
+
+</style>
+</head>
+<body>
+
+<div id="sheltonLoginGate" role="dialog" aria-modal="true" aria-labelledby="sheltonLoginTitle">
+  <form class="login-card" id="sheltonLoginForm">
+    <h2 id="sheltonLoginTitle">Shelton &amp; Barber</h2>
+    <p>Acesso do administrador</p>
+    <label for="sheltonLoginEmail">E-mail</label>
+    <input id="sheltonLoginEmail" type="email" autocomplete="username" required placeholder="Seu e-mail">
+    <label for="sheltonLoginPassword" style="display:block;margin-top:14px">Senha</label>
+    <input id="sheltonLoginPassword" type="password" autocomplete="current-password" required placeholder="Sua senha">
+    <button id="sheltonLoginButton" type="submit">Entrar</button>
+    <div id="sheltonLoginMessage" aria-live="polite"></div>
+  </form>
+</div>
+
+<header><button class="iconbtn" onclick="openMenu()" aria-label="Abrir menu" title="Abrir menu">☰</button><button class="home-shortcut" onclick="go('home')" aria-label="Voltar à página inicial" title="Página inicial">⌂ <span>Início</span></button><h1 id="headerTitle">Shelton &amp; Barber</h1><div class="avatar-mini" id="headerAvatar">SB</div></header>
+<div id="backdrop" class="menu-backdrop" onclick="closeMenu()"></div>
+<nav id="menu" class="menu" aria-label="Menu principal">
+  <div class="brand" id="menuBrand">✦<br>BARBEARIA</div>
+  <button onclick="go('home')"><span>⌂</span>Página Inicial</button>
+  <button onclick="go('profile')"><span>●</span>Meu Perfil</button>
+  <button onclick="go('themes')"><span>🎨</span>Temas</button>
+  <button onclick="go('appointments')"><span>▦</span>Meus Agendamentos</button>
+  <button onclick="go('clients')"><span>♟</span>Carteira de Clientes</button>
+  <button onclick="go('team')"><span>♟</span>Minha Equipe</button>
+  <button onclick="go('promote')"><span>📣</span>Promover Salão</button>
+  <button onclick="go('reports')"><span>↗</span>Desempenho &amp; Finanças</button>
+  <button onclick="go('waitlist')"><span>⌛</span>Fila de Espera</button>
+  <button onclick="go('settings')"><span>⚙</span>Ajustes do Salão</button>
+  <hr>
+  <button onclick="go('support')"><span>ⓘ</span>Ajuda &amp; Suporte</button>
+  <button onclick="sheltonSignOut()"><span>⇥</span>Sair</button>
+</nav>
+<main>
+<section id="home" class="page active">
+  <div class="hero"><div class="avatar" id="homeAvatar">✂</div><div><h2 id="homeName">Shelton &amp; Barber</h2><div class="green">Assinatura: Ativa</div></div></div>
+  <div class="tiles">
+    <button class="tile" onclick="go('appointments')"><span class="ico">▦</span>Agenda</button>
+    <button class="tile" onclick="go('services')"><span class="ico">✂</span>Serviços</button>
+    <button class="tile" onclick="go('reports')"><span class="ico">↗</span>Relatórios</button>
+  </div>
+  <h2 class="section-title">Solicitações Pendentes (<span id="pendingCount">0</span>)</h2>
+  <div class="empty" style="padding-top:70px">Tudo em dia! Sem solicitações.</div><p class="footerhint">Versão 2 de teste • Os recursos de demonstração ainda não recebem reservas reais.</p>
+</section>
+<section id="profile" class="page">
+  <div class="row between"><h2>Meu Perfil</h2><button class="iconbtn" onclick="alert('A função de login será conectada numa etapa futura.')">⇥</button></div>
+  <div class="profile-photo" id="profileAvatar">SB</div><div style="text-align:center;margin-bottom:18px"><span class="badge">Assinatura Ativa</span></div>
+  <div class="field"><label>Seu Nome</label><input id="profileName" placeholder="Seu nome"></div>
+  <div class="field"><label>Seu WhatsApp / Telefone</label><input id="profilePhone" placeholder="Seu telefone" inputmode="tel"></div>
+  <div class="field"><label>E-mail de login</label><input id="profileEmail" placeholder="seu@email.com" type="email"></div>
+  <button class="btn full" onclick="saveProfile()">Salvar Alterações</button>
+  <p class="footerhint">Os dados são editáveis. Nesta versão de teste ficam guardados somente neste navegador e não são enviados a outros aparelhos.</p>
+  <button class="btn danger" onclick="if(confirm('Excluir os dados de perfil guardados neste teste?')){localStorage.removeItem('barberPrototype');location.reload()}">▣ Excluir dados locais do teste</button>
+</section>
+<section id="themes" class="page">
+  <h2>Visual do Aplicativo</h2><p>Toque em um tema para mudar as cores:</p><div id="themeList" class="grid2"></div>
+</section>
+<section id="appointments" class="page appointments-compact">
+  <h2>Meus Agendamentos</h2>
+  <div class="appointment-day-guide" aria-label="Navegação por dia">
+    <button class="day-nav-btn" type="button" onclick="shiftAppointmentDay(-1)" aria-label="Dia anterior">‹</button>
+    <div class="appointment-day-center"><label for="appointmentDayPicker">Agendamentos do dia</label><input id="appointmentDayPicker" type="date" onchange="chooseAppointmentDay(this.value)"><div id="appointmentDayLabel" class="appointment-day-label"></div></div>
+    <button class="day-nav-btn" type="button" onclick="shiftAppointmentDay(1)" aria-label="Próximo dia">›</button>
+  </div>
+  <div class="appointment-day-summary"><span id="upcomingCount">0</span> agendamento(s) neste dia</div>
+  <div id="appointmentList" class="empty">Nenhum agendamento para este dia.</div>
+  <div id="appointmentFormPanel" class="card" style="display:none"><div class="row between"><h3>Adicionar agendamento de teste</h3><button type="button" class="pill" onclick="closeAppointmentForm()">Fechar ✕</button></div><p class="muted small">Este formulário é apenas para testar a interface. Ainda não envia nem sincroniza reservas.</p><div class="field"><label>Cliente</label><div class="row" style="align-items:stretch"><input id="aptClient" placeholder="Digite o nome do cliente..." oninput="suggestAppointmentClients()" autocomplete="off"><button class="btn" style="margin:0;min-width:54px;padding:10px 16px" title="Cadastrar novo cliente" onclick="openQuickClientForm()">＋</button></div><div id="aptClientSuggestions"></div><div id="selectedClientCard" style="display:none"></div><div id="quickClientForm" class="listitem" style="display:none"><b>Cadastrar novo cliente</b><div class="field"><label>Nome</label><input id="quickClientName" placeholder="Nome completo"></div><div class="field"><label>E-mail</label><input id="quickClientEmail" type="email" placeholder="email@exemplo.com"></div><div class="field"><label>Telefone</label><input id="quickClientPhone" placeholder="Telefone"></div><div class="field"><label>Foto do cliente (opcional)</label><input id="quickClientPhoto" type="file" accept="image/*"></div><div class="row"><button class="btn" onclick="saveQuickClient()">Cadastrar e selecionar</button><button class="btn secondary" onclick="closeQuickClientForm()">Cancelar</button></div></div></div><div class="field"><label>Serviço</label><button type="button" class="btn secondary full" style="margin-top:0;text-align:left;display:flex;align-items:center;justify-content:space-between" onclick="openServicePicker()"><span id="aptServiceLabel">Escolher serviço cadastrado</span><span>▾</span></button><div id="aptServicePicker" class="listitem" style="display:none;margin-top:8px"></div></div><div class="field"><label>Profissional desejado</label><button type="button" class="btn secondary full" style="margin-top:0;text-align:left;display:flex;align-items:center;justify-content:space-between" onclick="openProfessionalPicker()"><span id="aptProfessionalLabel">Escolher profissional</span><span>▾</span></button><div id="aptProfessionalPicker" class="listitem" style="display:none;margin-top:8px"></div></div><div class="grid2"><div class="field"><label>Data</label><input id="aptDate" type="date"></div><div class="field"><label>Horário</label><input id="aptTime" type="time"></div></div><button class="btn full" onclick="addAppointment()">Adicionar teste</button></div>
+</section>
+<section id="clients" class="page">
+  <h2>Carteira de Clientes</h2><div class="field"><input id="clientSearch" placeholder="⌕ Buscar por nome, e-mail ou telefone..." oninput="renderClients()"></div><div id="clientList"></div>
+  <div class="card"><h3>Adicionar cliente de teste</h3><div class="field"><label>Nome</label><input id="newClientName" placeholder="Nome do cliente"></div><div class="field"><label>E-mail</label><input id="newClientEmail" type="email" placeholder="email@exemplo.com"></div><div class="field"><label>Telefone</label><input id="newClientPhone" placeholder="Telefone"></div><div class="field"><label>Foto do cliente (opcional)</label><input id="newClientPhoto" type="file" accept="image/*"></div><button class="btn full" onclick="addClient()">Adicionar cliente</button></div>
+</section>
+<section id="team" class="page">
+  <h2>Minha Equipe</h2><div class="goldcard row"><span style="font-size:32px">★</span><div><b>Plano OURO</b><div id="teamCount" class="muted">Você cadastrou 1 de 10 profissionais permitidos.</div></div></div><div id="teamList"></div>
+  <div class="card"><h3>Adicionar profissional</h3><div class="field"><label>Foto do profissional <span class="required-mark">*</span></label><input id="teamPhoto" type="file" accept="image/*" required onchange="previewTeamPhoto()"><div id="teamPhotoPreview" class="muted small" style="margin-top:8px">Foto obrigatória.</div></div><div class="field"><label>Nome <span class="required-mark">*</span></label><input id="teamName" placeholder="Nome do profissional" required autocomplete="name"></div><div class="field"><label>E-mail <span class="required-mark">*</span></label><input id="teamEmail" type="email" placeholder="profissional@email.com" required autocomplete="email"></div><div class="field"><label>Telefone <span class="required-mark">*</span></label><input id="teamPhone" type="tel" placeholder="(00) 00000-0000" required autocomplete="tel" inputmode="tel"></div><div class="field"><label>Especialidades (opcional)</label><input id="teamSpecialty" placeholder="Ex.: Corte, barba"></div><button class="btn full" onclick="addTeam()">＋ Adicionar profissional</button></div>
+</section>
+<section id="promote" class="page">
+  <h2>Promover Salão / Aviso</h2><p class="muted">Prepare promoções e comunicados para os clientes vinculados. Esta versão guarda apenas um rascunho local; nenhuma mensagem real será enviada.</p>
+  <div class="field"><label>Título da Promoção/Comunicado</label><input id="promoTitle" placeholder="Título"></div><div class="field"><label>Mensagem da Promoção</label><textarea id="promoMessage" placeholder="Escreva sua mensagem"></textarea></div>
+  <h3>Formato de Exibição no Cliente</h3><div id="promoFormats" class="row" style="flex-wrap:wrap"></div><h3 style="margin-top:22px">Duração da Exibição</h3><div id="promoDurations" class="row" style="flex-wrap:wrap"></div><button class="btn full" onclick="saveCampaign()">Preparar campanha de teste</button><div id="campaignResult" class="muted small"></div>
+</section>
+<section id="reports" class="page">
+  <h2>Relatórios &amp; Performance</h2><div class="card"><div class="row" id="reportFilters"></div></div>
+  <div class="goldcard"><b class="gold" id="realizedLabel">Realizado (Passado) · MÊS</b><div style="font-size:38px;font-weight:800;margin:16px 0" id="revenue">R$ 0,00</div><div class="row between" style="align-items:flex-start"><div><span class="muted">Previsto (Futuro)</span><div class="green" id="forecastRevenue">R$ 0,00</div></div><div style="text-align:right"><span class="muted" id="revenueLabel">Faturamento (Realizado + Previsto)</span><div style="font-size:15px;font-weight:700;margin-top:4px" id="totalRevenueSmall">R$ 0,00</div></div></div><hr style="border-color:#4a4030;margin:18px 0"><div class="row between"><b>Ticket Médio por Atendimento</b><b id="averageTicket">R$ 0,00</b></div></div>
+  <div class="card"><h3>Evolução Mensal (Últimos 6 Meses)</h3><div class="chart" id="chart"></div><div class="muted small">Valores de atendimentos concluídos, conforme a data do atendimento.</div></div><div class="card"><h3>Faturamento por Serviço</h3><div id="serviceRevenue"><div class="empty" style="padding:30px 5px">Sem faturamento no período.</div></div></div>
+  <div class="grid2"><div class="card"><b>Taxa de Cancelamento</b><div id="cancelRate" style="text-align:center;font-size:28px;margin:34px 0">0,0%</div><div id="cancelDetails" class="muted small">0 de 0 agendamentos</div></div><div class="card"><b>Total Concluído</b><div id="completedTotal" style="text-align:center;font-size:28px;margin:25px 0">🟢<br>0</div><div class="muted small">Atendimentos com baixa registrada</div></div></div><div class="card"><h3>Serviços Mais Agendados</h3><div id="topServices"><p class="muted">Sem dados no período.</p></div></div><div class="card"><h3>Profissionais Mais Requisitados</h3><div id="topTeam"><p class="muted">Sem dados no período.</p></div></div>
+</section>
+<section id="waitlist" class="page">
+  <h2>Fila de Espera</h2><h3 class="gold">Clientes aguardando vagas:</h3><div id="waitList" class="empty">Nenhum cliente na Fila de Espera.</div><div class="card"><h3>Adicionar entrada de teste</h3><div class="field"><label>Nome do cliente</label><input id="waitName" placeholder="Nome"></div><div class="field"><label>Serviço desejado</label><input id="waitService" placeholder="Serviço"></div><div class="field"><label>Disponibilidade</label><input id="waitAvailability" placeholder="Ex.: sábado de manhã"></div><button class="btn full" onclick="addWait()">Adicionar à fila de teste</button></div>
+</section>
+<section id="settings" class="page">
+  <h2>Ajustes do Salão</h2>
+  <div class="settings-card"><h3>Formato da Logo</h3><div class="row"><button class="pill selected" id="logoCircle" onclick="setLogoFormat('Circular')">Circular</button><button class="pill" id="logoBanner" onclick="setLogoFormat('Banner (1200x250)')">Banner (1200x250)</button></div><div class="profile-photo" id="logoPreview">SB</div><div class="row"><label class="btn">Mudar Foto<input type="file" accept="image/*" hidden onchange="uploadLogo(event)"></label><button class="btn danger" onclick="removeLogo()">Remover</button></div></div>
+  <div class="settings-card"><h3>Informações do Salão</h3><div class="field"><label>Nome do Salão</label><input id="salonName" placeholder="Nome do salão"></div><div class="field"><label>Endereço</label><input id="salonAddress" placeholder="Endereço do salão"></div><div class="field"><label>Telefone / WhatsApp</label><input id="salonPhone" placeholder="Telefone comercial"></div></div>
+  <div class="settings-card"><h3>Horários e Intervalos</h3><div class="grid2"><div class="field"><label>Abre</label><input id="openTime" type="time" value="09:00"></div><div class="field"><label>Fecha</label><input id="closeTime" type="time" value="19:30"></div><div class="field"><label>Almoço Início</label><input id="lunchStart" type="time" value="11:00"></div><div class="field"><label>Almoço Fim</label><input id="lunchEnd" type="time" value="14:00"></div></div><b>Intervalo dos Horários</b><div class="row" id="slotOptions" style="margin-top:10px;flex-wrap:wrap"></div><h4>Bloqueios de horário</h4><p class="muted small">Cadastre horários indisponíveis além do almoço. Eles aparecerão em creme claro na agenda.</p><div class="grid2"><div class="field"><label>Início do bloqueio</label><input id="blockStart" type="time" value="15:00"></div><div class="field"><label>Fim do bloqueio</label><input id="blockEnd" type="time" value="16:00"></div><div class="field"><label>Começar em</label><input id="blockDate" type="date"></div><div class="field"><label>Repetir por</label><select id="blockPeriod" onchange="updateBlockPeriodFields()"><option value="once">Somente neste dia</option><option value="days">Dias seguidos</option><option value="months">Meses</option><option value="year">Um ano inteiro</option></select></div><div class="field" id="blockCountWrap" style="display:none"><label id="blockCountLabel">Quantidade</label><input id="blockCount" type="number" min="1" max="365" value="7"></div></div><div class="field"><label>Quais dias bloquear?</label><select id="blockWeekMode" onchange="$('blockWeekdaysWrap').style.display=this.value==='selected'?'block':'none'"><option value="all">Todos os dias</option><option value="selected">Escolher dias da semana</option></select></div><div id="blockWeekdaysWrap" class="days" style="display:none;margin-bottom:12px"><button type="button" class="day" data-block-day="0" onclick="toggleBlockWeekday(0)">D</button><button type="button" class="day on" data-block-day="1" onclick="toggleBlockWeekday(1)">S</button><button type="button" class="day on" data-block-day="2" onclick="toggleBlockWeekday(2)">T</button><button type="button" class="day on" data-block-day="3" onclick="toggleBlockWeekday(3)">Q</button><button type="button" class="day on" data-block-day="4" onclick="toggleBlockWeekday(4)">Q</button><button type="button" class="day on" data-block-day="5" onclick="toggleBlockWeekday(5)">S</button><button type="button" class="day" data-block-day="6" onclick="toggleBlockWeekday(6)">S</button></div><div class="field"><label>Motivo (opcional)</label><input id="blockLabel" placeholder="Ex.: Compromisso pessoal"></div><button type="button" class="btn secondary full" onclick="addConfiguredBlock()">＋ Adicionar bloqueio</button><div id="configuredBlocks"></div><h4>Dias de Funcionamento</h4><div class="days" id="days"></div></div>
+  <div class="settings-card"><div class="row between"><div><h3>Aceite Automático</h3><span class="muted small">Confirmar agendamentos instantaneamente sem aprovação manual</span></div><input type="checkbox" id="autoAccept"></div></div>
+  <div class="settings-card"><h3>Ramo de Atividade</h3><div class="grid2" id="businessTypes"></div></div>
+  <div class="settings-card"><div class="row between"><div><h3>Configuração por Profissional</h3><span class="muted small">Horários e preços próprios por profissional</span></div><input type="checkbox" id="perProfessional"></div></div>
+  <div class="settings-card"><div class="row between"><div><h3>Fila de Espera Inteligente</h3><span class="muted small">Permitir que clientes entrem na fila quando não houver horários</span></div><input type="checkbox" id="waitEnabled" checked></div></div>
+  <div class="settings-card"><h3>Políticas de Antecedência (Horas)</h3><div class="field"><label>Antecedência Mínima para Agendar (Horas)</label><input id="minBookHours" type="number" min="0" value="3"></div><div class="field"><label>Antecedência Mínima para Cancelar (Horas)</label><input id="minCancelHours" type="number" min="0" value="6"></div></div>
+  <div class="settings-card"><div class="row between"><div><h3>Programa de Fidelidade</h3><span class="muted small">Gerar cartão de fidelidade no aplicativo do cliente</span></div><input type="checkbox" id="loyaltyEnabled" checked></div><div class="field"><label>Qtd. de Serviços para Ganhar o Prêmio</label><input id="loyaltyCount" type="number" min="1" value="10"></div><div class="field"><label>Descrição do Prêmio</label><input id="loyaltyPrize" value="50% no Décimo primeiro Corte"></div><div class="field"><label>Validade para Resgate (Dias após limite)</label><input id="loyaltyValidity" type="number" min="1" value="60"></div><div class="row between"><div><b>Validação Automática</b><div class="muted small">Conceder ponto automaticamente ao dar baixa no atendimento</div></div><input type="checkbox" id="loyaltyAuto"></div></div>
+  <div class="settings-card"><h3>☁️ Sincronização na nuvem</h3><p class="muted small">Status da conexão com o Firebase.</p><div id="firebaseSyncStatus" class="footerhint">Aguardando autenticação...</div><button class="btn secondary full" onclick="window.sheltonCloudSyncNow?.()">Sincronizar agora</button></div>
+  <div class="settings-card"><h3>🛡️ Cópia de Segurança</h3><p class="muted small">Antes de liberar espaço no navegador, exporte seus cadastros para um arquivo de segurança. O arquivo será baixado no celular e poderá conter dados pessoais dos clientes; guarde-o em local seguro.</p><button class="btn full" onclick="exportBackup()">⬇️ Baixar cópia de segurança</button><div class="field" style="margin-top:12px"><label>Restaurar uma cópia de segurança</label><input type="file" id="backupFile" accept="application/json,.json" onchange="importBackup(event)"></div><p class="footerhint">A restauração substitui os dados atuais deste protótipo. Faça isso somente depois de exportar uma cópia atual.</p><div id="backupStatus" class="footerhint"></div></div>
+  <div class="settings-card"><h3>Link de Agendamento dos Clientes</h3><p class="muted small">Esta área ficará responsável pelo link que você poderá compartilhar com seus clientes. O endereço público será criado quando publicarmos o aplicativo; por enquanto, este é apenas um espaço de preparação.</p><div class="field"><label>Endereço público</label><input value="Ainda não publicado" disabled></div><button class="btn secondary full" onclick="alert('O link público será configurado depois de concluirmos o fluxo de agendamento e a publicação. Nenhum link ativo existe nesta versão.')">Preparar link de agendamento</button></div>
+  <button class="btn full" onclick="saveSettings()">Salvar Todas as Configurações</button><div id="settingsSaved" class="footerhint"></div>
+</section>
+<section id="services" class="page"><h2>Meus Serviços</h2><p class="muted">Cadastre cada serviço, escolha uma foto da galeria do celular e ajuste as informações quando quiser.</p><div id="serviceList"></div><div class="card"><h3>Adicionar serviço</h3><div class="field"><label>Nome do serviço</label><input id="serviceName" placeholder="Ex.: Corte masculino"></div><div class="field"><label>Preço (R$)</label><input id="servicePrice" type="number" min="0" step=".01" placeholder="35"></div><div class="field"><label>Duração (minutos)</label><input id="serviceDuration" type="number" min="5" step="5" value="30"></div><div class="field"><label>Cor de referência do serviço</label><div id="serviceColorChoices" class="service-color-choices" role="group" aria-label="Escolha uma cor para o serviço"></div><div id="serviceColorHelp" class="muted small">Escolha uma cor. Ela será usada no cartão do agendamento.</div></div><div class="field"><label>Foto do serviço (escolher da galeria)</label><input id="servicePhoto" type="file" accept="image/*" onchange="previewServicePhoto(event)"><div id="servicePhotoPreview" class="muted small" style="margin-top:8px">Nenhuma foto selecionada.</div></div><button class="btn full" onclick="addService()">＋ Adicionar serviço</button></div></section>
+<section id="support" class="page"><h2>Suporte &amp; Ajuda</h2><div id="supportHistory" class="notice" style="display:none">✓ Atendimento finalizado. Obrigado!</div><div id="chatMessages"><div class="listitem"><b>Assistente Virtual 🤖</b><p>Olá! Sou o assistente virtual de suporte. Como posso ajudar você hoje?</p></div></div><div class="field"><label>Descreva sua dúvida</label><textarea id="supportMessage" placeholder="Digite sua mensagem..."></textarea></div><button class="btn full" onclick="sendSupport()">Enviar mensagem de teste</button><button class="btn secondary full" onclick="newSupport()">Iniciar Novo Chamado</button><p class="footerhint">As mensagens são apenas locais neste protótipo. O suporte humano será conectado futuramente.</p></section>
+</main>
+<script>
+const themes=[
+{name:'Luxo Dourado',bg:'#111111',top:'#202020',panel:'#49454f',accent:'#c9a45a',text:'#f2eef4',muted:'#aaa4b0'},
+{name:'Rosa Quartzo',bg:'#fff1f3',top:'#f7e5e9',panel:'#f5dce4',accent:'#e83d7a',text:'#241820',muted:'#705c66'},
+{name:'Barber Shop',bg:'#0d1018',top:'#171b25',panel:'#242b38',accent:'#1976d2',text:'#f4f6fb',muted:'#a8b2c2'},
+{name:'Natureza',bg:'#f0f7e9',top:'#e2eed9',panel:'#dce8d4',accent:'#4caf50',text:'#172318',muted:'#526451'},
+{name:'Vinho Tinto',bg:'#210010',top:'#310019',panel:'#4a1230',accent:'#a01861',text:'#fff0f7',muted:'#d0a7bc'},
+{name:'Oceano',bg:'#ddf7f9',top:'#c9eef1',panel:'#c4e8ec',accent:'#00a9b7',text:'#102326',muted:'#507276'},
+{name:'Lavanda',bg:'#f3e5f5',top:'#ead9ef',panel:'#e0d0e6',accent:'#9575cd',text:'#241b2b',muted:'#75657d'},
+{name:'Industrial',bg:'#263238',top:'#1c282d',panel:'#37474f',accent:'#ff9800',text:'#f5f5f5',muted:'#bdc7cb'},
+{name:'Capuccino',bg:'#efebe9',top:'#ded6d1',panel:'#d3c7c0',accent:'#795548',text:'#241b17',muted:'#75635a'},
+{name:'Minimalista',bg:'#ffffff',top:'#f2f2f2',panel:'#e9e9e9',accent:'#222222',text:'#171717',muted:'#686868'}];
+const days=['D','S','T','Q','Q','S','S'];const dayNames=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+let state={profile:{name:'Shelton Barber',phone:'',email:'',logo:''},salon:{name:'Shelton & Barber',address:'',phone:'',logoFormat:'Circular'},settings:{open:'09:00',close:'19:30',lunchStart:'11:00',lunchEnd:'14:00',slot:30,days:[2,3,4,5,6],autoAccept:false,perProfessional:false,waitEnabled:true,minBookHours:3,minCancelHours:6,loyaltyEnabled:true,loyaltyCount:10,loyaltyPrize:'50% no Décimo primeiro Corte',loyaltyValidity:60,loyaltyAuto:false,business:'Barbearia'},theme:'Luxo Dourado',appointments:[],receipts:[],clients:[],team:[],wait:[],services:[],campaigns:[],blocks:[],reportPeriod:'MÊS'};
+function load(){try{let s=JSON.parse(localStorage.getItem('barberPrototype')||'null');if(s)state={...state,...s,profile:{...state.profile,...s.profile},salon:{...state.salon,...s.salon},settings:{...state.settings,...s.settings}}}catch(e){}}
+function persist(){
+  const key='barberPrototype';
+  try{localStorage.setItem(key,JSON.stringify(state));window.sheltonCloudSyncNow?.();return true}catch(e){}
+  // Primeiro remove cópias redundantes das fotos que ficam gravadas dentro de cada agendamento.
+  try{state.appointments.forEach(a=>{delete a.clientPhoto;delete a.servicePhoto});localStorage.setItem(key,JSON.stringify(state));window.sheltonCloudSyncNow?.();alert('O armazenamento estava cheio. Liberei espaço removendo cópias repetidas das fotos nos agendamentos. Os cadastros e as fotos originais de clientes/serviços foram mantidos.');return true}catch(e){}
+  // Se ainda não couber, preserva os dados textuais e remove imagens para evitar perder novos cadastros.
+  try{const compact=JSON.parse(JSON.stringify(state));compact.clients.forEach(x=>x.photo='');compact.services.forEach(x=>x.photo='');compact.appointments.forEach(x=>{delete x.clientPhoto;delete x.servicePhoto});if(compact.profile)compact.profile.logo='';if(compact.salon)compact.salon.logo='';localStorage.setItem(key,JSON.stringify(compact));state=compact;window.sheltonCloudSyncNow?.();alert('O navegador está sem espaço suficiente até para as fotos compactadas. Salvei os cadastros, serviços e agendamentos sem imagens para não perder os dados. As fotos precisarão ser adicionadas novamente após liberar espaço.');return true}catch(e){alert('O armazenamento do navegador está totalmente cheio. Não consegui confirmar o salvamento. Exporte ou faça uma cópia dos dados antes de limpar o armazenamento do navegador.');return false}
+}function $(id){return document.getElementById(id)}
+function openMenu(){$('menu').classList.add('open');$('backdrop').classList.add('open')}function closeMenu(){$('menu').classList.remove('open');$('backdrop').classList.remove('open')}
+const titles={home:'Shelton & Barber',profile:'Meu Perfil',themes:'Visual do Aplicativo',appointments:'Meus Agendamentos',clients:'Carteira de Clientes',team:'Minha Equipe',promote:'Promover Salão / Aviso',reports:'Relatórios & Performance',waitlist:'Fila de Espera',settings:'Ajustes do Salão',services:'Serviços',support:'Suporte & Ajuda'};
+function go(id){closeMenu();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));$('headerTitle').textContent=titles[id]||id;if(id==='home')$('headerTitle').textContent=state.salon.name||'Minha Barbearia';if(id==='profile')fillProfile();if(id==='settings')fillSettings();if(id==='themes')renderThemes();if(id==='clients')renderClients();if(id==='team')renderTeam();if(id==='appointments')renderAppointments();if(id==='waitlist')renderWait();if(id==='services')renderServices();if(id==='reports')renderReports();if(id==='promote')renderPromoOptions();if(id==='support'){}window.scrollTo(0,0)}
+function setTheme(name){state.theme=name;persist();applyTheme();renderThemes()}function applyTheme(){let t=themes.find(x=>x.name===state.theme)||themes[0];document.documentElement.style.setProperty('--bg',t.bg);document.documentElement.style.setProperty('--top',t.top);document.documentElement.style.setProperty('--panel',t.panel);document.documentElement.style.setProperty('--gold',t.accent);document.documentElement.style.setProperty('--text',t.text);document.documentElement.style.setProperty('--muted',t.muted);$('headerAvatar').textContent=(state.profile.email||state.profile.name||'SB').split('@')[0].slice(0,2).toUpperCase();$('homeName').textContent=state.salon.name||'Minha Barbearia';$('headerTitle').textContent=document.querySelector('.page.active')?.id==='home'?(state.salon.name||'Minha Barbearia'):($('headerTitle').textContent||'Meu Aplicativo');let av=state.profile.logo||state.salon.logo;if(av){$('homeAvatar').innerHTML=`<img src="${av}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;$('profileAvatar').innerHTML=`<img src="${av}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;$('logoPreview').innerHTML=`<img src="${av}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`}else{$('homeAvatar').textContent='✂';$('profileAvatar').textContent=(state.profile.name||'SB').slice(0,2).toUpperCase();$('logoPreview').textContent=(state.salon.name||'SB').slice(0,2).toUpperCase()}$('menuBrand').innerHTML='✦<br>'+escapeHtml(state.salon.name||'BARBEARIA')}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fillProfile(){$('profileName').value=state.profile.name||'';$('profilePhone').value=state.profile.phone||'';$('profileEmail').value=state.profile.email||''}
+function saveProfile(){state.profile.name=$('profileName').value.trim();state.profile.phone=$('profilePhone').value.trim();state.profile.email=$('profileEmail').value.trim();persist();applyTheme();alert('Perfil atualizado neste navegador de teste.')}
+function renderThemes(){$('themeList').innerHTML=themes.map(t=>`<button class="theme-card ${state.theme===t.name?'selected':''}" style="background:${t.bg};color:${t.text}" onclick="setTheme('${t.name}')"><span class="swatch" style="background:${t.accent}"></span><span style="text-align:left"><b>${t.name}</b>${state.theme===t.name?'<div class="small">✓ Selecionado</div>':''}</span></button>`).join('')}
+function fillSettings(){if($('blockDate')&&!$('blockDate').value)$('blockDate').value=localDateISO(new Date());let s=state.settings;const map={salonName:state.salon.name,salonAddress:state.salon.address,salonPhone:state.salon.phone,openTime:s.open,closeTime:s.close,lunchStart:s.lunchStart,lunchEnd:s.lunchEnd,minBookHours:s.minBookHours,minCancelHours:s.minCancelHours,loyaltyCount:s.loyaltyCount,loyaltyPrize:s.loyaltyPrize,loyaltyValidity:s.loyaltyValidity};Object.entries(map).forEach(([id,v])=>$(id).value=v??'');['autoAccept','perProfessional','waitEnabled','loyaltyEnabled','loyaltyAuto'].forEach(id=>$(id).checked=({autoAccept:s.autoAccept,perProfessional:s.perProfessional,waitEnabled:s.waitEnabled,loyaltyEnabled:s.loyaltyEnabled,loyaltyAuto:s.loyaltyAuto})[id]);$('logoCircle').classList.toggle('selected',state.salon.logoFormat==='Circular');$('logoBanner').classList.toggle('selected',state.salon.logoFormat!=='Circular');$('slotOptions').innerHTML=[15,30,60].map(n=>`<button class="pill ${s.slot===n?'selected':''}" onclick="state.settings.slot=${n};fillSettings()">${n===60?'1 hora':n+' min'}</button>`).join('');$('days').innerHTML=dayNames.map((d,i)=>`<button title="${d}" class="day ${s.days.includes(i)?'on':''}" onclick="toggleDay(${i})">${days[i]}</button>`).join('');renderConfiguredBlocks();$('businessTypes').innerHTML=['Barbearia','Salão / Cabelo','Manicure','Estética','Estúdio de Tattoo'].map(x=>`<button class="pill ${s.business===x?'selected':''}" onclick="state.settings.business='${x}';fillSettings()">${x}</button>`).join('');applyTheme()}
+function toggleDay(i){let a=state.settings.days;if(a.includes(i))state.settings.days=a.filter(x=>x!==i);else state.settings.days.push(i);fillSettings()}function setLogoFormat(v){state.salon.logoFormat=v;fillSettings()}function uploadLogo(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{state.salon.logo=r.result;state.profile.logo=r.result;persist();applyTheme()};r.readAsDataURL(f)}function removeLogo(){state.salon.logo='';state.profile.logo='';persist();applyTheme()}
+function saveSettings(){let s=state.settings;state.salon.name=$('salonName').value.trim();state.salon.address=$('salonAddress').value.trim();state.salon.phone=$('salonPhone').value.trim();s.open=$('openTime').value;s.close=$('closeTime').value;s.lunchStart=$('lunchStart').value;s.lunchEnd=$('lunchEnd').value;s.autoAccept=$('autoAccept').checked;s.perProfessional=$('perProfessional').checked;s.waitEnabled=$('waitEnabled').checked;s.minBookHours=Math.max(0,+$('minBookHours').value||0);s.minCancelHours=Math.max(0,+$('minCancelHours').value||0);s.loyaltyEnabled=$('loyaltyEnabled').checked;s.loyaltyCount=Math.max(1,+$('loyaltyCount').value||1);s.loyaltyPrize=$('loyaltyPrize').value;s.loyaltyValidity=Math.max(1,+$('loyaltyValidity').value||1);s.loyaltyAuto=$('loyaltyAuto').checked;persist();applyTheme();renderAppointments();$('settingsSaved').textContent='✓ Configurações salvas neste navegador de teste.';setTimeout(()=>{$('settingsSaved').textContent=''},3000)}
+let selectedAppointmentClientIndex = null;
+let selectedAppointmentServiceIndex = null;
+let selectedAppointmentProfessional = null;
+function openQuickClientForm(){const box=$('quickClientForm');if(box)box.style.display='block';$('quickClientName').focus()}
+function closeQuickClientForm(){const box=$('quickClientForm');if(box)box.style.display='none'}
+function selectAppointmentClient(index){const c=state.clients[index];if(!c)return;selectedAppointmentClientIndex=index;$('aptClient').value=c.name;$('aptClientSuggestions').innerHTML='';$('selectedClientCard').style.display='block';$('selectedClientCard').innerHTML=`<div class="listitem row" style="align-items:center;margin-top:8px"><div class="avatar" style="width:42px;height:42px;overflow:hidden">${c.photo?`<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div style="flex:1"><b>${escapeHtml(c.name)}</b><div class="muted small">${escapeHtml(c.phone||'Telefone não cadastrado')}</div></div><button type="button" class="pill" onclick="clearAppointmentClient()">Trocar</button></div>`}
+function clearAppointmentClient(){selectedAppointmentClientIndex=null;$('aptClient').value='';$('selectedClientCard').style.display='none';$('selectedClientCard').innerHTML='';$('aptClient').focus()}
+function suggestAppointmentClients(){const q=$('aptClient').value.trim().toLowerCase();selectedAppointmentClientIndex=null;$('selectedClientCard').style.display='none';if(!q){$('aptClientSuggestions').innerHTML='';return}const found=state.clients.map((c,i)=>({c,i})).filter(x=>(x.c.name+' '+(x.c.phone||'')+' '+(x.c.email||'')).toLowerCase().includes(q)).slice(0,8);$('aptClientSuggestions').innerHTML=found.length?found.map(({c,i})=>`<button type="button" class="listitem row" style="width:100%;text-align:left;align-items:center" onclick="selectAppointmentClient(${i})"><div class="avatar" style="width:38px;height:38px;overflow:hidden">${c.photo?`<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div style="flex:1"><b>${escapeHtml(c.name)}</b><div class="muted small">${escapeHtml(c.phone||'')}</div></div><span class="pill">Selecionar</span></button>`).join(''):'<div class="muted small" style="padding:10px">Nenhum cliente encontrado. Use + para cadastrar.</div>'}
+function prepareClientPhoto(file,done){if(!file){done('');return}if(!file.type.startsWith('image/')){alert('Escolha um arquivo de imagem.');return}const reader=new FileReader();reader.onerror=()=>alert('Não foi possível ler a foto. Tente outra imagem.');reader.onload=()=>{const img=new Image();img.onerror=()=>alert('Não foi possível abrir a foto. Tente outra imagem.');img.onload=()=>{const maxSide=600,scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);try{done(canvas.toDataURL('image/jpeg',0.65))}catch(e){alert('Não foi possível preparar a foto. Tente uma imagem menor.')}};img.src=reader.result};reader.readAsDataURL(file)}
+function saveQuickClient(){const name=$('quickClientName').value.trim();if(!name)return alert('Informe o nome do cliente.');const email=$('quickClientEmail').value.trim(),phone=$('quickClientPhone').value.trim(),file=$('quickClientPhoto').files[0];const finish=photo=>{const old=state.clients.length;state.clients.push({name,email,phone,photo:photo||'',stamps:0});if(!persist()){state.clients.splice(old,1);return}renderClients();['quickClientName','quickClientEmail','quickClientPhone','quickClientPhoto'].forEach(id=>$(id).value='');closeQuickClientForm();selectAppointmentClient(state.clients.length-1)};if(file)prepareClientPhoto(file,finish);else finish('')}
+function openServicePicker(){const box=$('aptServicePicker');if(!box)return;box.style.display=box.style.display==='block'?'none':'block';if(box.style.display!=='block')return;box.innerHTML=state.services.length?state.services.map((s,i)=>`<div class="listitem row" style="align-items:center;gap:10px"><div style="width:52px;height:52px;min-width:52px;border-radius:10px;overflow:hidden;background:#34313a;display:grid;place-items:center">${s.photo?`<img src="${s.photo}" style="width:100%;height:100%;object-fit:cover">`:'✂'}</div><div style="flex:1;min-width:0"><b>${escapeHtml(s.name)}</b><div class="muted small">${escapeHtml(s.category||'Serviço')} · ${Number(s.price||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})} · ${Number(s.duration||30)} min</div></div><button type="button" class="pill" onclick="selectAppointmentService(${i})">Selecionar</button></div>`).join(''):'<div class="empty">Cadastre primeiro um serviço na aba Meus Serviços.</div>'}
+function selectAppointmentService(index){const s=state.services[index];if(!s)return;selectedAppointmentServiceIndex=index;$('aptServiceLabel').textContent=`${s.name} · ${Number(s.price||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})} · ${Number(s.duration||30)} min`;$('aptServicePicker').style.display='none';openProfessionalPicker()}
+function getAvailableProfessionals(){const list=[];const ownerName=(state.profile.name||state.salon.name||'Responsável').trim();if(ownerName)list.push({id:'owner',name:ownerName,photo:state.profile.logo||state.salon.logo||'',email:state.profile.email||'',phone:state.profile.phone||''});(state.team||[]).forEach((t,i)=>{if(t&&t.name)list.push({id:'team-'+i,name:t.name,photo:t.photo||'',email:t.email||'',phone:t.phone||''})});return list}
+function openProfessionalPicker(){const box=$('aptProfessionalPicker');if(!box)return;box.style.display=box.style.display==='block'?'none':'block';if(box.style.display!=='block')return;const people=getAvailableProfessionals();box.innerHTML=people.length?people.map((p)=>`<div class="listitem row" style="align-items:center;gap:10px"><div style="width:44px;height:44px;min-width:44px;border-radius:50%;overflow:hidden;background:#34313a;display:grid;place-items:center">${p.photo?`<img src="${p.photo}" alt="" style="width:100%;height:100%;object-fit:cover">`:escapeHtml(p.name.slice(0,2).toUpperCase())}</div><div style="flex:1;min-width:0"><b>${escapeHtml(p.name)}</b><div class="muted small">${escapeHtml(p.email||p.phone||'Profissional')}</div></div><button type="button" class="pill" onclick="selectAppointmentProfessional('${p.id}')">Selecionar</button></div>`).join(''):'<div class="empty">Cadastre profissionais na aba Minha Equipe.</div>'}
+function selectAppointmentProfessional(id){const p=getAvailableProfessionals().find(x=>x.id===id);if(!p)return;selectedAppointmentProfessional={id:p.id,name:p.name};$('aptProfessionalLabel').textContent=p.name;$('aptProfessionalPicker').style.display='none'}
+function addAppointment(){const typedName=$('aptClient').value.trim();let clientIndex=selectedAppointmentClientIndex;if(clientIndex===null||clientIndex===undefined||!state.clients[clientIndex]||state.clients[clientIndex].name!==typedName){clientIndex=state.clients.findIndex(c=>c.name.toLowerCase()===typedName.toLowerCase())}const serviceIndex=selectedAppointmentServiceIndex;const date=$('aptDate').value,time=$('aptTime').value;if(clientIndex<0||!typedName){alert('Escolha um cliente cadastrado ou cadastre um novo cliente.');return}if(serviceIndex===null||serviceIndex===undefined||!state.services[serviceIndex]){alert('Escolha um serviço cadastrado.');return}if(!selectedAppointmentProfessional){alert('Escolha o profissional que atenderá o cliente.');return}if(!date||!time){alert('Informe a data e o horário do agendamento.');return}const c=state.clients[clientIndex],s=state.services[serviceIndex];if(state.appointments.some(a=>a.date===date&&a.time===time)){if(!confirm('Já existe um agendamento nesse horário. Deseja adicionar mesmo assim?'))return}state.appointments.push({client:c.name,clientId:clientIndex,clientPhone:c.phone||'',service:s.name,serviceId:serviceIndex,professional:selectedAppointmentProfessional.name,professionalId:selectedAppointmentProfessional.id,price:Number(s.price||0),duration:Number(s.duration||30),date,time,status:'Agendado'});persist();selectedAppointmentDay=date;renderAppointments();closeAppointmentForm();$('aptTime').value='';$('aptDate').value=selectedAppointmentDay;clearAppointmentClient();selectedAppointmentServiceIndex=null;selectedAppointmentProfessional=null;$('aptServiceLabel').textContent='Escolher serviço cadastrado';$('aptServicePicker').style.display='none';$('aptProfessionalLabel').textContent='Escolher profissional';$('aptProfessionalPicker').style.display='none';alert('Agendamento de teste adicionado com sucesso neste navegador.')}
+
+let selectedAppointmentDay = localDateISO(new Date());
+function localDateISO(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function formatAppointmentDay(iso){if(!iso)return '';const p=iso.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:iso}
+function chooseAppointmentDay(value){if(!value)return;selectedAppointmentDay=value;renderAppointments()}
+function shiftAppointmentDay(delta){const base=new Date((selectedAppointmentDay||localDateISO(new Date()))+'T12:00:00');base.setDate(base.getDate()+delta);selectedAppointmentDay=localDateISO(base);renderAppointments()}
+function appointmentTab(){renderAppointments()}
+function openAppointmentForm(date,time){
+  $('aptDate').value=date||selectedAppointmentDay||localDateISO(new Date());
+  $('aptTime').value=time||'09:00';
+  $('appointmentFormPanel').style.display='block';
+  $('appointmentFormPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function chooseEmptySlot(date,time){const choice=prompt('O que deseja fazer?\n1 - Agendar cliente\n2 - Novo bloqueio','1');if(choice==='1'){openAppointmentForm(date,time);return}if(choice==='2'){const duration=prompt('Por quantos minutos deseja bloquear?','30');const mins=Number(duration);if(!Number.isFinite(mins)||mins<15||mins>720){alert('Informe uma duração entre 15 e 720 minutos.');return}state.blocks=state.blocks||[];state.blocks.push({date,start:time,end:minutesToTime(timeToMinutes(time)+mins),label:'Bloqueio',id:Date.now()});persist();renderAppointments();return}}
+function timeToMinutes(t){const a=String(t||'00:00').split(':').map(Number);return a[0]*60+a[1]}
+function minutesToTime(m){return String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function updateBlockPeriodFields(){const mode=$('blockPeriod').value;const wrap=$('blockCountWrap');wrap.style.display=(mode==='days'||mode==='months')?'block':'none';$('blockCountLabel').textContent=mode==='months'?'Quantidade de meses':'Quantidade de dias';$('blockCount').max=mode==='months'?120:365;$('blockCount').value=mode==='months'?'3':'7';$('blockWeekMode').value='all';$('blockWeekdaysWrap').style.display='none'}
+function toggleBlockWeekday(day){const b=document.querySelector('[data-block-day="'+day+'"]');if(b)b.classList.toggle('on')}
+function blockAppliesToDate(b,date){if(!b.recurring)return b.date===date;if(!b.startDate)return true;const target=new Date(date+'T12:00:00'),start=new Date(b.startDate+'T12:00:00');if(target<start)return false;let end=new Date(start);if(b.period==='once'){}else if(b.period==='days')end.setDate(end.getDate()+Math.max(1,Number(b.count)||1)-1);else if(b.period==='months')end.setMonth(end.getMonth()+Math.max(1,Number(b.count)||1));else if(b.period==='year')end.setFullYear(end.getFullYear()+1);if(target>end)return false;if(b.weekMode==='selected'&&Array.isArray(b.weekdays)&&!b.weekdays.includes(target.getDay()))return false;return true}
+function addConfiguredBlock(){const start=$('blockStart').value,end=$('blockEnd').value,label=$('blockLabel').value.trim()||'Horário bloqueado',startDate=$('blockDate').value||localDateISO(new Date()),period=$('blockPeriod').value,weekMode=$('blockWeekMode').value;const count=(period==='days'||period==='months')?Number($('blockCount').value):1;if(!start||!end||timeToMinutes(end)<=timeToMinutes(start)){alert('Escolha um horário final posterior ao início.');return}if((period==='days'||period==='months')&&(!Number.isInteger(count)||count<1)){alert('Informe uma quantidade válida.');return}const weekdays=weekMode==='selected'?Array.from(document.querySelectorAll('[data-block-day].on')).map(b=>Number(b.dataset.blockDay)):[];if(weekMode==='selected'&&!weekdays.length){alert('Escolha pelo menos um dia da semana.');return}state.blocks=state.blocks||[];state.blocks.push({start,end,label,recurring:true,startDate,period,count,weekMode,weekdays,id:Date.now()});persist();renderConfiguredBlocks();renderAppointments();$('blockLabel').value=''}
+function removeConfiguredBlock(id){state.blocks=(state.blocks||[]).filter(b=>b.id!==id);persist();renderConfiguredBlocks();renderAppointments()}
+function renderConfiguredBlocks(){const box=$('configuredBlocks');if(!box)return;const items=(state.blocks||[]).filter(b=>b.recurring);box.innerHTML=items.length?items.map(b=>{let freq=!b.startDate?'Todos os dias (bloqueio antigo)':b.period==='once'?'Somente '+b.startDate:b.period==='days'?'Por '+b.count+' dias desde '+b.startDate:b.period==='months'?'Por '+b.count+' meses desde '+b.startDate:'Por 1 ano desde '+b.startDate;let wk=b.weekMode==='selected'&&b.weekdays?' · Dias: '+b.weekdays.map(d=>['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d]).join(', '):' · Todos os dias';return `<div class="listitem row between"><span><b>${escapeHtml(b.start)}–${escapeHtml(b.end)}</b><br><span class="muted small">${escapeHtml(b.label||'Horário bloqueado')}<br>${escapeHtml(freq+wk)}</span></span><button class="pill" onclick="removeConfiguredBlock(${b.id})">Remover</button></div>`}).join(''):'<p class="muted small">Nenhum bloqueio adicional cadastrado.</p>'}
+function closeAppointmentForm(){const panel=$('appointmentFormPanel');if(panel)panel.style.display='none';}
+let selectedActionAppointmentId=null;
+function appointmentStableId(a){if(!a.id)a.id='apt-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);return a.id}
+function openAppointmentActions(index){if(window.__suppressAppointmentClick)return;const a=state.appointments[index];if(!a)return;appointmentStableId(a);selectedActionAppointmentId=a.id;const paid=!!a.paid;const end=minutesToTime(timeToMinutes(a.time)+Math.max(30,Number(a.duration)||30));$('appointmentActionTitle').textContent=a.client||'Agendamento';$('appointmentActionDetails').textContent=(a.date||'')+' · '+(a.time||'')+'–'+end+' · '+(a.service||'Serviço')+(paid?' · Já baixado':'');$('appointmentReceiptValue').value=Number(a.receivedAmount??a.price??0).toFixed(2);$('appointmentReceiptValue').disabled=paid;$('appointmentActionBackdrop').classList.add('open')}
+function closeAppointmentActions(){$('appointmentActionBackdrop').classList.remove('open');selectedActionAppointmentId=null}
+function markAppointmentPaid(){
+ const a=state.appointments.find(x=>x.id===selectedActionAppointmentId);if(!a)return;
+ if(a.paid){alert('Este agendamento já teve baixa registrada.');return}
+ const value=Number($('appointmentReceiptValue').value);
+ if(!Number.isFinite(value)||value<0){alert('Confirme um valor válido antes de dar baixa.');return}
+ if(!confirm('Confirmar recebimento de R$ '+value.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' para '+(a.client||'este cliente')+'?'))return;
+ let client=null;
+ if(state.settings.loyaltyEnabled){
+   client=state.clients.find(c=>a.clientId!==undefined&&c.id!==undefined&&String(c.id)===String(a.clientId))||state.clients.find(c=>(c.name||'').trim().toLowerCase()===(a.client||'').trim().toLowerCase());
+ }
+ let awardPoint=false;
+ if(state.settings.loyaltyEnabled&&client){
+   if(state.settings.loyaltyAuto)awardPoint=true;
+   else awardPoint=confirm('Deseja marcar 1 ponto no cartão de fidelidade de '+client.name+'?');
+ }
+ a.paid=true;a.status='Concluído';a.receivedAmount=value;a.paidAt=new Date().toISOString();
+ state.receipts=state.receipts||[];state.receipts.push({id:'rec-'+a.id,appointmentId:a.id,date:a.date,client:a.client,service:a.service,description:'Receita de agendamento',type:'receita',amount:value,createdAt:a.paidAt});
+ if(awardPoint){client.stamps=Math.max(0,Number(client.stamps)||0)+1;client.lastStampAt=a.paidAt;client.stampHistory=Array.isArray(client.stampHistory)?client.stampHistory:[];client.stampHistory.push({appointmentId:a.id,date:a.date,service:a.service,at:a.paidAt});a.loyaltyPointAwarded=true;}
+ const saved=persist();
+ closeAppointmentActions();renderAppointments();renderReports();renderClients();
+ if(awardPoint)alert('Baixa registrada e 1 ponto concedido a '+client.name+'.');
+ else if(state.settings.loyaltyEnabled&&!client)alert('Baixa registrada. Não foi possível localizar este cliente cadastrado para conceder o ponto.');
+ else alert('Baixa registrada e receita adicionada aos recebimentos do aplicativo.');
+}
+function cancelSelectedAppointment(){const a=state.appointments.find(x=>x.id===selectedActionAppointmentId);if(!a)return;if(!confirm('Deseja cancelar o agendamento de '+(a.client||'este cliente')+'?'))return;a.status='Cancelado';a.cancelledAt=new Date().toISOString();persist();closeAppointmentActions();renderAppointments();alert('Agendamento cancelado. Ele saiu da agenda e o horário está livre novamente. O registro foi preservado nos relatórios.')}
+function renderAppointments(){
+  if(!selectedAppointmentDay)selectedAppointmentDay=localDateISO(new Date());
+  const picker=$('appointmentDayPicker');if(picker&&picker.value!==selectedAppointmentDay)picker.value=selectedAppointmentDay;
+  const label=$('appointmentDayLabel');if(label)label.textContent=formatAppointmentDay(selectedAppointmentDay);
+  const arr=state.appointments.filter(a=>a.date===selectedAppointmentDay&&a.status!=='Cancelado').sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+  $('upcomingCount').textContent=arr.length;
+  const toMin=t=>{const m=String(t||'00:00').match(/^(\d{1,2}):(\d{2})$/);return m?Number(m[1])*60+Number(m[2]):0};
+  const open=Math.max(0,toMin(state.settings.open||'09:00')),close=Math.max(open+30,toMin(state.settings.close||'19:30'));
+  const start=Math.floor(open/30)*30,end=Math.ceil(close/30)*30,slots=[];
+  for(let m=start;m<end;m+=30)slots.push(m);
+  const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  const dayBlocks=(state.blocks||[]).filter(b=>!b.recurring&&b.date===selectedAppointmentDay);const configured=(state.blocks||[]).filter(b=>b.recurring&&blockAppliesToDate(b,selectedAppointmentDay));const lunchStart=toMin(state.settings.lunchStart||'11:00'),lunchEnd=toMin(state.settings.lunchEnd||'14:00');const fullSlots=slots.slice();const compactLunch=lunchEnd>lunchStart;const blockedAt=m=>(compactLunch&&m<lunchEnd&&m+30>lunchStart)||dayBlocks.some(b=>toMin(b.start)<m+30&&toMin(b.end)>m)||configured.some(b=>toMin(b.start)<m+30&&toMin(b.end)>m);
+  // V40: remove as linhas internas do almoço da grade visual, preservando o bloqueio real.
+  if(compactLunch){const firstHidden=Math.ceil((lunchStart+30)/30)*30;for(let i=slots.length-1;i>=0;i--){const m=slots[i];if(m>=firstHidden&&m<lunchEnd)slots.splice(i,1)}}
+  const rowForTime=m=>{let idx=slots.findIndex(v=>v>=m);if(idx<0)idx=slots.length-1;return Math.max(1,idx+1)};
+  const occupied=slots.map(m=>arr.some(a=>toMin(a.time)<m+30 && toMin(a.time)+Math.max(30,Number(a.duration)||30)>m)||blockedAt(m));
+  let html='<div class="appointment-timeline" style="grid-template-rows:repeat('+slots.length+',42px)">';
+  slots.forEach((m,i)=>{
+    html+=`<div class="timeline-time ${m%60===0?'major':''}" style="grid-row:${i+1}">${fmt(m)}</div>`;
+    if(!occupied[i])html+=`<button type="button" class="timeline-slot" aria-label="Opções às ${fmt(m)}" title="Agendar cliente ou criar bloqueio às ${fmt(m)}" style="grid-row:${i+1}" onclick="chooseEmptySlot('${selectedAppointmentDay}','${fmt(m)}')"></button>`;
+  });
+  // Intervalo de almoço e bloqueios são desenhados em creme claro na mesma grade.
+  const addBlockCard=(begin,finish,label,rowClass='')=>{const actual=toMin(begin),row=rowForTime(actual),isLunch=label==='Intervalo de almoço',span=isLunch?1:Math.max(1,Math.ceil((toMin(finish)-actual)/30));html+=`<div class="timeline-block ${rowClass}" style="grid-row:${row}/span ${span}"><b>${escapeHtml(label)}</b><span>${escapeHtml(begin)} – ${escapeHtml(finish)}</span></div>`};
+  if(lunchEnd>lunchStart)addBlockCard(state.settings.lunchStart||'11:00',state.settings.lunchEnd||'14:00','Intervalo de almoço');
+  configured.forEach(b=>addBlockCard(b.start,b.end,b.label||'Horário bloqueado'));
+  dayBlocks.forEach(b=>addBlockCard(b.start,b.end,b.label||'Bloqueio'));
+  arr.forEach(a=>{
+    const actual=toMin(a.time),row=rowForTime(actual),span=Math.max(1,Math.ceil((Number(a.duration)||30)/30));
+    const c=(a.clientId!==null&&a.clientId!==undefined?state.clients[a.clientId]:null)||state.clients.find(x=>x.name.toLowerCase()===String(a.client||'').toLowerCase());
+    const name=c?.name||a.client||'Cliente';const service=state.services[a.serviceId]||state.services.find(x=>x.name===a.service);
+    const endTime=fmt(actual+Math.max(30,Number(a.duration)||30));
+    const color=service?.color||a.color||'#4b82d0';const textColor=readableTextColor(color);const eventStyle=`background:${color};color:${textColor};--event-text:${textColor};--event-border:${textColor==='#111111'?'#11111166':'#ffffff80'};`;
+    const clientPhoto=c?.photo||'';const servicePhoto=service?.photo||'';const serviceName=(a.service||service?.name||'Serviço')+(a.professional?' · '+a.professional:'');
+    const shortEvent=Math.max(30,Number(a.duration)||30)<=30;
+    const clientPhotoMarkup=clientPhoto?`<img src="${clientPhoto}" alt="Foto do cliente">`:escapeHtml(String(name).trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase());
+    const servicePhotoMarkup=servicePhoto?`<img src="${servicePhoto}" alt="Foto do serviço">`:'✂';
+    const appointmentId=appointmentStableId(a);html+=`<div class="timeline-event ${shortEvent?'short-event':'long-event'} ${a.paid?'appointment-paid':''}" data-appointment-id="${appointmentId}" style="grid-row:${row}/span ${span};${eventStyle}" title="Toque para opções." onclick="openAppointmentActions(${state.appointments.indexOf(a)})">${shortEvent?`<div class="short-event-layout"><div class="event-person-photo">${clientPhotoMarkup}</div><div class="short-event-main"><div class="timeline-event-time">${escapeHtml(a.time||'--:--')} - ${endTime}</div><div class="event-client-name">${escapeHtml(name)}</div></div><div class="short-event-service"><div class="event-service-photo">${servicePhotoMarkup}</div><div class="event-service-title">${escapeHtml(serviceName)}</div></div></div>`:`<div class="timeline-event-time">${escapeHtml(a.time||'--:--')} - ${endTime}</div><div class="event-head"><div class="event-person-photo">${clientPhotoMarkup}</div><div class="event-main"><div class="event-client-name">${escapeHtml(name)}</div><div class="event-service-row"><div class="event-service-photo">${servicePhotoMarkup}</div><div class="event-service-title">${escapeHtml(serviceName)}</div></div></div></div>`}${a.paid?'<span style="font-size:10px;font-weight:800">✓ BAIXADO</span>':''}</div>`;
+  });
+  html+='</div>';
+  if(!arr.length)html='<div class="muted small" style="text-align:center;padding:8px 4px">Toque em um espaço livre da grade para adicionar um agendamento.</div>'+html;
+  $('appointmentList').innerHTML=html;
+}
+function deleteAppointment(i){state.appointments.splice(i,1);persist();renderAppointments()}
+function renderClients(){let q=($('clientSearch')?.value||'').toLowerCase();let arr=state.clients.filter(c=>(c.name+c.email+c.phone).toLowerCase().includes(q));$('clientList').innerHTML=arr.length?arr.map((c,i)=>`<div class="listitem"><div class="row"><div class="avatar" style="width:54px;height:54px;font-size:18px;overflow:hidden">${c.photo?`<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div style="flex:1"><b>${escapeHtml(c.name)}</b><div class="muted small">${escapeHtml(c.email)}</div><div class="muted small">${escapeHtml(c.phone)}</div></div><button class="iconbtn" onclick="alert('Contato real será conectado futuramente.')">▤</button></div><p><b>Selos: ${c.stamps||0} / ${state.settings.loyaltyCount}</b></p><div class="progress"><span style="width:${Math.min(100,(c.stamps||0)/state.settings.loyaltyCount*100)}%"></span></div><button class="pill" style="margin-top:12px" onclick="deleteClient(${i})">Remover teste</button></div>`).join(''):'<div class="empty">Nenhum cliente encontrado.</div>'}
+function addClient(){let name=$('newClientName').value.trim();if(!name){alert('Informe o nome do cliente.');return}let email=$('newClientEmail').value.trim(),phone=$('newClientPhone').value.trim(),file=$('newClientPhoto').files[0];const finish=photo=>{const old=state.clients.length;state.clients.push({name,email,phone,photo:photo||'',stamps:0});if(!persist()){state.clients.splice(old,1);return}['newClientName','newClientEmail','newClientPhone','newClientPhoto'].forEach(id=>$(id).value='');renderClients()};if(file)prepareClientPhoto(file,finish);else finish('')}function deleteClient(i){const removed=state.clients.splice(i,1);if(!persist())state.clients.splice(i,0,...removed);renderClients()}
+function renderTeam(){$('teamCount').textContent=`Você cadastrou ${state.team.length+1} de 10 profissionais permitidos.`;$('teamList').innerHTML=state.team.map((t,i)=>`<div class="listitem"><div class="row between" style="align-items:center"><div class="avatar" style="width:52px;height:52px;overflow:hidden;flex-shrink:0">${t.photo?`<img src="${t.photo}" alt="Foto de ${escapeHtml(t.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:escapeHtml((t.name||'').slice(0,2).toUpperCase())}</div><div style="flex:1;min-width:0"><b>${escapeHtml(t.name)}</b><div class="muted small">${escapeHtml(t.email||'')}</div><div class="muted small">${escapeHtml(t.phone||'')}</div><div class="muted small">${escapeHtml(t.specialty||'')}</div></div><button class="pill" onclick="removeTeam(${i})">Excluir</button></div></div>`).join('')||'<div class="empty" style="padding:25px">Nenhum profissional adicional.</div>'}
+function addTeam(){const photoFile=$('teamPhoto').files[0],name=$('teamName').value.trim(),email=$('teamEmail').value.trim(),phone=$('teamPhone').value.trim(),specialty=$('teamSpecialty').value.trim();if(!photoFile)return alert('Adicione a foto do profissional.');if(!name)return alert('Informe o nome do profissional.');if(!email||!$('teamEmail').checkValidity())return alert('Informe um e-mail válido.');if(!phone)return alert('Informe o telefone do profissional.');if(state.team.length>=9)return alert('Limite de teste de 10 profissionais atingido.');prepareClientPhoto(photoFile,photo=>{if(!photo)return;const item={name,email,phone,photo,specialty};state.team.push(item);if(!persist()){state.team.pop();return}['teamPhoto','teamName','teamEmail','teamPhone','teamSpecialty'].forEach(id=>$(id).value='');$('teamPhotoPreview').textContent='Foto obrigatória.';renderTeam()})}function removeTeam(i){state.team.splice(i,1);persist();renderTeam()}
+function previewTeamPhoto(){const f=$('teamPhoto').files&&$('teamPhoto').files[0],el=$('teamPhotoPreview');if(!f){el.textContent='Foto obrigatória.';return}if(!f.type.startsWith('image/')){ $('teamPhoto').value='';el.textContent='Escolha um arquivo de imagem.';return}el.textContent='Foto selecionada: '+f.name;}
+function renderWait(){$('waitList').innerHTML=state.settings.waitEnabled?(state.wait.length?state.wait.map((w,i)=>`<div class="listitem"><b>${escapeHtml(w.name)}</b><p>${escapeHtml(w.service)} · ${escapeHtml(w.availability)}</p><button class="pill" onclick="removeWait(${i})">Remover teste</button></div>`).join(''):'<div class="empty">Nenhum cliente na Fila de Espera.</div>'):'<div class="empty">A fila de espera está desativada nas configurações.</div>'}
+function addWait(){if(!state.settings.waitEnabled){alert('Ative a fila de espera em Ajustes do Salão.');return}let name=$('waitName').value.trim();if(!name)return alert('Informe o nome do cliente.');state.wait.push({name,service:$('waitService').value.trim(),availability:$('waitAvailability').value.trim()});persist();['waitName','waitService','waitAvailability'].forEach(id=>$(id).value='');renderWait()}function removeWait(i){state.wait.splice(i,1);persist();renderWait()}
+function renderPromoOptions(){let fs=['Apenas Push','Banner no Topo','Pop-up Modal'],ds=['Única','1 Dia','1 Semana','Permanente'];window.promoFormat=window.promoFormat||'Banner no Topo';window.promoDuration=window.promoDuration||'Permanente';$('promoFormats').innerHTML=fs.map(x=>`<button class="pill ${window.promoFormat===x?'selected':''}" onclick="window.promoFormat='${x}';renderPromoOptions()">${x}</button>`).join('');$('promoDurations').innerHTML=ds.map(x=>`<button class="pill ${window.promoDuration===x?'selected':''}" onclick="window.promoDuration='${x}';renderPromoOptions()">${x}</button>`).join('')}
+function saveCampaign(){let title=$('promoTitle').value.trim(),message=$('promoMessage').value.trim();if(!title||!message)return alert('Preencha o título e a mensagem.');state.campaigns.push({title,message,format:window.promoFormat||'Banner no Topo',duration:window.promoDuration||'Permanente',test:true});persist();$('campaignResult').textContent='Campanha de teste preparada localmente. Nenhuma mensagem foi enviada aos clientes.';alert('Campanha guardada apenas neste navegador de teste.')}
+function reportMoney(value){return Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function reportDateInPeriod(date,period,now){if(!date)return false;const d=new Date(date+'T12:00:00');if(Number.isNaN(d.getTime()))return false;const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());if(period==='TUDO')return true;if(period==='SEMANA'){const start=new Date(today);start.setDate(today.getDate()-today.getDay());const end=new Date(start);end.setDate(start.getDate()+7);return d>=start&&d<end}if(period==='MÊS')return d.getFullYear()===today.getFullYear()&&d.getMonth()===today.getMonth();if(period==='ANO')return d.getFullYear()===today.getFullYear();return true}
+function renderReports(){
+ const period=state.reportPeriod||'MÊS', now=new Date(), todayISO=localDateISO(now), appointments=Array.isArray(state.appointments)?state.appointments:[];
+ $('reportFilters').innerHTML=['SEMANA','MÊS','ANO','TUDO'].map(x=>`<button class="pill ${period===x?'selected':''}" onclick="state.reportPeriod='${x}';persist();renderReports()">${x}</button>`).join('');
+ $('realizedLabel').textContent='Realizado (Passado) · '+period;$('revenueLabel').textContent='Faturamento (Realizado + Previsto)';
+ const inPeriod=a=>reportDateInPeriod(a.date,period,now);
+ const cancelled=appointments.filter(a=>a.status==='Cancelado'&&inPeriod(a));
+ const completed=appointments.filter(a=>(a.paid||a.status==='Concluído')&&inPeriod(a));
+ const future=appointments.filter(a=>a.date>=todayISO&&a.status!=='Cancelado'&&!a.paid&&a.status!=='Concluído'&&inPeriod(a));
+ const amount=a=>Number(a.receivedAmount??a.price??0)||0;
+ const realized=completed.reduce((sum,a)=>sum+amount(a),0), forecast=future.reduce((sum,a)=>sum+Number(a.price||0),0), total=realized+forecast;
+ $('revenue').textContent=reportMoney(realized);$('totalRevenueSmall').textContent=reportMoney(total);$('forecastRevenue').textContent=reportMoney(forecast);$('averageTicket').textContent=reportMoney(completed.length?realized/completed.length:0);
+ $('completedTotal').innerHTML='🟢<br>'+completed.length;
+ const decided=appointments.filter(a=>inPeriod(a)&&(a.status==='Cancelado'||a.paid||a.status==='Concluído'||a.date<todayISO));
+ const cancellationRate=decided.length?cancelled.length/decided.length*100:0;$('cancelRate').textContent=cancellationRate.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';$('cancelDetails').textContent=cancelled.length+' cancelado(s) de '+decided.length+' agendamento(s) com resultado definido';
+ const serviceMap=new Map();completed.forEach(a=>{const key=a.service||'Serviço não identificado';serviceMap.set(key,(serviceMap.get(key)||0)+amount(a))});const serviceRows=[...serviceMap.entries()].sort((a,b)=>b[1]-a[1]);$('serviceRevenue').innerHTML=serviceRows.length?serviceRows.map(([name,value])=>`<div class="listitem"><div class="row between"><b>${escapeHtml(name)}</b><b class="green">${reportMoney(value)}</b></div></div>`).join(''):'<div class="empty" style="padding:25px 5px">Nenhum atendimento concluído com faturamento neste período.</div>';
+ const bookingMap=new Map();appointments.filter(inPeriod).forEach(a=>{const key=a.service||'Serviço não identificado';if(!bookingMap.has(key))bookingMap.set(key,{total:0,completed:0,future:0,cancelled:0});const x=bookingMap.get(key);x.total++;if(a.status==='Cancelado')x.cancelled++;else if(a.paid||a.status==='Concluído')x.completed++;else if(a.date>=todayISO)x.future++});const bookingRows=[...bookingMap.entries()].sort((a,b)=>b[1].total-a[1].total);$('topServices').innerHTML=bookingRows.length?bookingRows.slice(0,8).map(([name,x])=>`<div class="listitem"><div class="row between"><b>${escapeHtml(name)}</b><b>${x.total} agendamento(s)</b></div><div class="muted small">${x.completed} concluído(s) · ${x.future} futuro(s) · ${x.cancelled} cancelado(s)</div></div>`).join(''):'<p class="muted">Sem agendamentos no período.</p>';
+ const teamMap=new Map();appointments.filter(inPeriod).forEach(a=>{const key=a.professional||a.teamMember||a.barber||'Profissional não informado';teamMap.set(key,(teamMap.get(key)||0)+1)});const teamRows=[...teamMap.entries()].sort((a,b)=>b[1]-a[1]);$('topTeam').innerHTML=teamRows.length?teamRows.slice(0,8).map(([name,count])=>`<div class="listitem row between"><b>${escapeHtml(name)}</b><span>${count} agendamento(s)</span></div>`).join(''):'<p class="muted">Sem agendamentos no período.</p>';
+ const monthList=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const y=d.getFullYear(),m=d.getMonth();const val=completed.filter(a=>{const ad=new Date((a.date||'')+'T12:00:00');return !Number.isNaN(ad.getTime())&&ad.getFullYear()===y&&ad.getMonth()===m}).reduce((sum,a)=>sum+amount(a),0);monthList.push({label:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','').toUpperCase(),value:val})}
+ const max=Math.max(1,...monthList.map(x=>x.value));$('chart').innerHTML=monthList.map(x=>`<div class="barcol"><i title="${reportMoney(x.value)}" style="height:${x.value?Math.max(4,x.value/max*100):2}%"></i><span>${x.label}</span><small style="font-size:9px;color:var(--muted)">${x.value?Math.round(x.value):'0'}</small></div>`).join('');
+}
+const SERVICE_COLORS=[{name:'Azul neon',hex:'#1677ff'},{name:'Amarelo neon',hex:'#f5e600'},{name:'Verde neon',hex:'#39ff14'},{name:'Rosa neon',hex:'#ff2bd6'},{name:'Laranja neon',hex:'#ff6a00'},{name:'Roxo neon',hex:'#a100ff'},{name:'Ciano neon',hex:'#00e5ff'},{name:'Vermelho vivo',hex:'#ff1744'},{name:'Verde limão',hex:'#b6ff00'},{name:'Magenta',hex:'#ff00a8'}];
+let selectedServiceColor='#1677ff';
+function renderServiceColorChoices(){const box=$('serviceColorChoices');if(!box)return;box.innerHTML=SERVICE_COLORS.map(c=>`<button type="button" class="service-color-choice" style="background:${c.hex}" aria-label="${c.name}" title="${c.name}" aria-pressed="${selectedServiceColor===c.hex}" onclick="chooseServiceColor('${c.hex}')"></button>`).join('')}
+function chooseServiceColor(hex){selectedServiceColor=hex;renderServiceColorChoices();const help=$('serviceColorHelp');const c=SERVICE_COLORS.find(x=>x.hex===hex);if(help)help.textContent='Cor selecionada: '+(c?.name||hex)+'. Ela aparecerá nos agendamentos deste serviço.'}
+function readableTextColor(hex){const h=String(hex||'#1677ff').replace('#','');if(!/^[0-9a-f]{6}$/i.test(h))return '#ffffff';const vals=[0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4));const lum=.2126*vals[0]+.7152*vals[1]+.0722*vals[2];return lum>0.42?'#111111':'#ffffff'}
+function renderServices(){renderServiceColorChoices();$('serviceList').innerHTML=state.services.map((s,i)=>`<div class="listitem row" style="align-items:center"><div style="width:58px;height:58px;min-width:58px;border-radius:12px;overflow:hidden;background:#34313a;display:grid;place-items:center;color:var(--gold)">${s.photo?`<img src="${s.photo}" style="width:100%;height:100%;object-fit:cover">`:'✂'}</div><div style="flex:1;min-width:0"><b>${escapeHtml(s.name)}</b><div class="muted small">${escapeHtml(s.category||'Serviço')} · ${s.duration} min · ${Number(s.price).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</div><div class="row" style="gap:6px;margin-top:6px"><span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:${s.color||'#1677ff'};border:1px solid #ffffff80"></span><span class="muted small">Cor do agendamento</span></div></div><button class="pill" onclick="state.services.splice(${i},1);persist();renderServices()">Excluir</button></div>`).join('')||'<div class="empty" style="padding:25px">Nenhum serviço cadastrado.</div>'}
+let pendingServicePhotoData='';
+function previewServicePhoto(event){const file=event.target.files&&event.target.files[0];const preview=$('servicePhotoPreview');pendingServicePhotoData='';if(!file){preview.innerHTML='Nenhuma foto selecionada.';return}if(!file.type.startsWith('image/')){event.target.value='';preview.textContent='Escolha um arquivo de imagem.';return}preview.textContent='Preparando foto em alta qualidade…';const reader=new FileReader();reader.onerror=()=>{preview.textContent='Não foi possível ler essa foto. Tente outra imagem.'};reader.onload=()=>{const img=new Image();img.onerror=()=>{preview.textContent='Não foi possível abrir essa foto. Tente JPG, PNG ou WEBP.'};img.onload=()=>{const maxSide=1200;const scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);try{pendingServicePhotoData=canvas.toDataURL('image/jpeg',0.78);preview.innerHTML='<img src="'+pendingServicePhotoData+'" alt="Prévia da foto" style="display:block;width:100%;max-height:180px;object-fit:contain;border-radius:10px;margin-bottom:6px"><span class="muted small">Foto otimizada para ocupar menos espaço ('+canvas.width+' × '+canvas.height+' px). Arquivos grandes são otimizados para caber melhor no sistema.</span>'}catch(e){pendingServicePhotoData='';preview.textContent='Essa foto não pôde ser preparada. Tente outra imagem.'}};img.src=reader.result};reader.readAsDataURL(file)}
+function addService(){let name=$('serviceName').value.trim(),category=$('serviceCategory')?.value.trim()||'',price=+$('servicePrice').value,duration=+$('serviceDuration').value;if(!name||price<0||!duration)return alert('Preencha nome, preço e duração.');const photo=pendingServicePhotoData;state.services.push({name,category,price,duration,photo:photo||'',color:selectedServiceColor||'#1677ff'});try{localStorage.setItem('barberPrototype',JSON.stringify(state));window.sheltonCloudSyncNow?.()}catch(e){state.services.pop();alert('O armazenamento do navegador ficou cheio. A foto foi preparada em alta qualidade, mas é preciso remover alguma foto antiga ou usar uma imagem um pouco menor para salvar mais serviços.');return}pendingServicePhotoData='';$('serviceName').value='';if($('serviceCategory'))$('serviceCategory').value='';$('servicePrice').value='';$('serviceDuration').value='30';selectedServiceColor='#1677ff';renderServiceColorChoices();if($('serviceColorHelp'))$('serviceColorHelp').textContent='Escolha uma cor. Ela será usada no cartão do agendamento.';if($('servicePhoto'))$('servicePhoto').value='';$('servicePhotoPreview').textContent='Nenhuma foto selecionada.';renderServices()}
+
+function exportBackup(){
+  try{
+    const backup={app:'Shelton & Barber',backupVersion:1,createdAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(state))};
+    const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-');a.href=url;a.download='backup_shelton_barber_'+stamp+'.json';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    if($('backupStatus'))$('backupStatus').textContent='Cópia preparada para baixar. Confira se o arquivo apareceu na pasta Downloads do celular.';
+    alert('A cópia de segurança foi preparada. Confira a pasta Downloads do celular antes de liberar espaço.');
+  }catch(e){alert('Não consegui preparar a cópia de segurança. Não limpe o navegador. Tente novamente ou faça uma captura desta mensagem.');}
+}
+function importBackup(event){
+  const file=event.target.files&&event.target.files[0];if(!file)return;
+  const reader=new FileReader();reader.onerror=()=>alert('Não foi possível ler o arquivo de cópia.');
+  reader.onload=()=>{try{
+    const parsed=JSON.parse(reader.result);const restored=parsed&&parsed.data?parsed.data:parsed;
+    if(!restored||!Array.isArray(restored.clients)||!Array.isArray(restored.services)||!Array.isArray(restored.appointments))throw new Error('Formato inválido');
+    if(!confirm('Restaurar esta cópia? Os dados atuais deste protótipo serão substituídos. Recomendamos baixar uma cópia atual antes de continuar.')){event.target.value='';return;}
+    const oldState=state;state={...oldState,...restored,profile:{...oldState.profile,...restored.profile},salon:{...oldState.salon,...restored.salon},settings:{...oldState.settings,...restored.settings}};
+    let saved=false;try{localStorage.setItem('barberPrototype',JSON.stringify(state));saved=true;window.sheltonCloudSyncNow?.()}catch(e){}
+    if(!saved){state=oldState;alert('O navegador continua sem espaço suficiente para restaurar esta cópia. Nenhum dado foi substituído. Exporte a cópia e libere espaço com cuidado antes de tentar novamente.');return;}
+    alert('Cópia restaurada com sucesso. A tela será atualizada.');location.reload();
+  }catch(e){alert('Este arquivo não parece ser uma cópia válida do Shelton & Barber. Nenhum dado foi alterado.');}finally{event.target.value='';}};
+  reader.readAsText(file);
+}
+
+function sendSupport(){let msg=$('supportMessage').value.trim();if(!msg)return alert('Digite sua mensagem.');let d=document.createElement('div');d.className='listitem';d.innerHTML='<b>Você</b><p>'+escapeHtml(msg)+'</p>'; $('chatMessages').appendChild(d);let reply=document.createElement('div');reply.className='listitem';reply.innerHTML='<b>Assistente Virtual 🤖</b><p>Esta é uma resposta demonstrativa. O atendimento real será conectado numa etapa futura.</p>'; $('chatMessages').appendChild(reply);$('supportMessage').value=''}
+function newSupport(){$('chatMessages').innerHTML='<div class="listitem"><b>Assistente Virtual 🤖</b><p>Olá! Sou o assistente virtual de suporte. Como posso ajudar você hoje?</p></div>'}
+load();selectedAppointmentDay=localDateISO(new Date());applyTheme();updateBlockPeriodFields();fillProfile();fillSettings();renderThemes();renderAppointments();renderClients();renderTeam();renderWait();renderPromoOptions();renderReports();renderServices();$('aptDate').value=localDateISO(new Date());if($('appointmentDayPicker'))$('appointmentDayPicker').value=selectedAppointmentDay;
+</script>
+
+<div id="appointmentActionBackdrop" class="appointment-action-backdrop" onclick="if(event.target===this)closeAppointmentActions()"><div class="appointment-action-modal" role="dialog" aria-modal="true" aria-labelledby="appointmentActionTitle"><h3 id="appointmentActionTitle">Agendamento</h3><div id="appointmentActionDetails" class="muted small"></div><div class="field"><label>Valor a receber (R$)</label><input id="appointmentReceiptValue" type="number" min="0" step="0.01"></div><button class="btn full" onclick="markAppointmentPaid()">Dar baixa / Confirmar recebimento</button><button class="btn secondary full" onclick="cancelSelectedAppointment()">Cancelar agendamento</button><button class="btn secondary full" onclick="closeAppointmentActions()">Fechar</button></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAi3QuDabHyGTdHGtwr5KAdTyTeL3SfoDQ",
+  authDomain: "shelton-barber.firebaseapp.com",
+  projectId: "shelton-barber",
+  storageBucket: "shelton-barber.firebasestorage.app",
+  messagingSenderId: "525555667391",
+  appId: "1:525555667391:web:a9be332c415747e771d10a"
+};
+const ADMIN_EMAIL = "ezequips@gmail.com";
+const loginGate = document.getElementById('sheltonLoginGate');
+const loginForm = document.getElementById('sheltonLoginForm');
+const loginMessage = document.getElementById('sheltonLoginMessage');
+const loginButton = document.getElementById('sheltonLoginButton');
+let shelterAuth = null;
+let shelterDb = null;
+let shelterStorage = null;
+let cloudSyncBusy = false;
+let cloudSyncReady = false;
+const CLOUD_DOC = "barberPrototype";
+function setCloudStatus(message) { const el = document.getElementById("firebaseSyncStatus"); if (el) el.textContent = message; }
+function isDataImage(value) { return typeof value === "string" && /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(value); }
+async function uploadEmbeddedImages(value, path, uid) {
+  if (isDataImage(value)) {
+    const mime = value.slice(5, value.indexOf(";"));
+    const ext = (mime.split("/")[1] || "jpg").replace(/[^a-zA-Z0-9]/g, "");
+    const imageRef = storageRef(shelterStorage, `users/${uid}/images/${path.replace(/[^a-zA-Z0-9/_-]/g, "_")}.${ext}`);
+    await uploadString(imageRef, value, "data_url", { contentType: mime });
+    return await getDownloadURL(imageRef);
+  }
+  if (Array.isArray(value)) { const result=[]; for (let i=0;i<value.length;i++) result.push(await uploadEmbeddedImages(value[i], `${path}_${i}`, uid)); return result; }
+  if (value && typeof value === "object") { const result={}; for (const [key,child] of Object.entries(value)) result[key]=await uploadEmbeddedImages(child, `${path}_${key}`, uid); return result; }
+  return value;
+}
+async function cloudSaveState() {
+  if (!shelterAuth?.currentUser || !shelterDb || !shelterStorage || !cloudSyncReady || cloudSyncBusy) return;
+  cloudSyncBusy=true;
+  try {
+    const uid=shelterAuth.currentUser.uid;
+    const cloudState=await uploadEmbeddedImages(JSON.parse(JSON.stringify(state)), "state", uid);
+    await setDoc(doc(shelterDb,"users",uid,"appData",CLOUD_DOC), {data:cloudState,updatedAt:serverTimestamp(),schemaVersion:1});
+    setCloudStatus("Sincronizado com a nuvem.");
+  } catch(err) { console.error("Falha ao sincronizar com Firebase:",err); setCloudStatus("Não foi possível sincronizar. Confira as regras do Firestore/Storage e a conexão."); }
+  finally { cloudSyncBusy=false; }
+}
+async function cloudLoadState() {
+  if (!shelterAuth?.currentUser || !shelterDb || !shelterStorage) return;
+  setCloudStatus("Verificando dados na nuvem...");
+  const uid=shelterAuth.currentUser.uid;
+  const snapshot=await getDoc(doc(shelterDb,"users",uid,"appData",CLOUD_DOC));
+  if (snapshot.exists() && snapshot.data()?.data) {
+    const remote=snapshot.data().data;
+    state={...state,...remote,profile:{...state.profile,...remote.profile},salon:{...state.salon,...remote.salon},settings:{...state.settings,...remote.settings}};
+    try { localStorage.setItem("barberPrototype",JSON.stringify(state)); } catch(e) {}
+    applyTheme(); updateBlockPeriodFields(); fillProfile(); fillSettings(); renderThemes(); renderAppointments(); renderClients(); renderTeam(); renderWait(); renderPromoOptions(); renderReports(); renderServices();
+    setCloudStatus("Dados carregados da nuvem.");
+  } else {
+    setCloudStatus("Enviando os dados existentes para a nuvem..."); cloudSyncReady=true; await cloudSaveState();
+  }
+  cloudSyncReady=true;
+}
+window.sheltonCloudSyncNow=async function(){ if(!shelterAuth?.currentUser){setCloudStatus("Entre com a conta de administrador para sincronizar.");return;} cloudSyncReady=true; await cloudSaveState(); };
+
+try {
+  const app = initializeApp(firebaseConfig);
+  shelterAuth = getAuth(app);
+  shelterDb = getFirestore(app);
+  shelterStorage = getStorage(app);
+  onAuthStateChanged(shelterAuth, async (user) => {
+    if (user && (user.email || '').toLowerCase() === ADMIN_EMAIL) {
+      try {
+        await cloudLoadState();
+        document.body.classList.add('shelton-authenticated');
+        loginGate.style.display = 'none';
+      } catch (err) {
+        console.error("Erro ao carregar dados da nuvem:", err);
+        document.body.classList.remove('shelton-authenticated');
+        loginGate.style.display = 'flex';
+        loginMessage.textContent = 'O login funcionou, mas a conexão com o banco ainda precisa de configuração. Seus dados locais foram preservados.';
+        setCloudStatus("Falha ao carregar dados. Verifique as regras do Firebase.");
+      }
+    } else {
+      document.body.classList.remove('shelton-authenticated');
+      loginGate.style.display = 'flex';
+      if (user) {
+        await signOut(shelterAuth);
+        loginMessage.textContent = 'Esta conta não tem permissão de administrador.';
+      }
+    }
+  });
+} catch (error) {
+  loginMessage.textContent = 'Não foi possível iniciar o acesso seguro. Confira a conexão e tente novamente.';
+}
+loginForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  loginMessage.textContent = '';
+  loginButton.disabled = true;
+  loginButton.textContent = 'Verificando...';
+  try {
+    if (!shelterAuth) throw new Error('auth-not-ready');
+    const email = document.getElementById('sheltonLoginEmail').value.trim().toLowerCase();
+    if (email !== ADMIN_EMAIL) throw new Error('admin-only');
+    await signInWithEmailAndPassword(shelterAuth, email, document.getElementById('sheltonLoginPassword').value);
+  } catch (error) {
+    const code = error?.code || error?.message || '';
+    if (code === 'admin-only') loginMessage.textContent = 'Somente o e-mail do administrador está autorizado nesta etapa.';
+    else if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) loginMessage.textContent = 'E-mail ou senha incorretos. Confira os dados e tente novamente.';
+    else if (code.includes('too-many-requests')) loginMessage.textContent = 'Muitas tentativas. Aguarde um pouco e tente novamente.';
+    else loginMessage.textContent = 'Não consegui entrar. Confira a conexão e se o acesso por e-mail e senha está ativo no Firebase.';
+  } finally {
+    loginButton.disabled = false;
+    loginButton.textContent = 'Entrar';
+  }
+});
+window.sheltonSignOut = async function(){
+  if (!shelterAuth) return;
+  try { await signOut(shelterAuth); } catch (error) { alert('Não foi possível sair da conta. Tente novamente.'); }
+};
+</script>
+
+</body>
+</html>
