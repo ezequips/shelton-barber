@@ -507,7 +507,9 @@ const firebaseConfig = {
   appId: "1:525555667391:web:a9be332c415747e771d10a"
 };
 const ADMIN_EMAIL = "ezequips@gmail.com";
-const db = getFirestore(initializeApp(firebaseConfig, "shelton-firestore-sync"));
+let shelterApp = null;
+let shelterAuth = null;
+let db = null;
 const CLOUD_STATUS_KEY = "sheltonCloudStatus";
 let cloudReady = false;
 let cloudBusy = false;
@@ -563,10 +565,10 @@ const loginGate = document.getElementById('sheltonLoginGate');
 const loginForm = document.getElementById('sheltonLoginForm');
 const loginMessage = document.getElementById('sheltonLoginMessage');
 const loginButton = document.getElementById('sheltonLoginButton');
-let shelterAuth = null;
 try {
-  const app = initializeApp(firebaseConfig);
-  shelterAuth = getAuth(app);
+  shelterApp = initializeApp(firebaseConfig);
+  shelterAuth = getAuth(shelterApp);
+  db = getFirestore(shelterApp);
   onAuthStateChanged(shelterAuth, async (user) => {
     if (user && (user.email || '').toLowerCase() === ADMIN_EMAIL) {
       document.body.classList.add('shelton-authenticated');
